@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import loadModel from "../utils/model";
+import loadModel from "../utils/model.js";
 
 
 const widthSegments = 100;
