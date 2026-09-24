@@ -214,9 +214,70 @@ export class Inventory{
                 const next = state.inventory.items[itemId]
                 - quantity;
                if(next === 0) {
-                   delete state.inventory.items[itemId]
+                   delete state.inventory.items[itemId];
+               } else {
+                   state.inventory.items[itemId] =
+                       next;
                }
+            },
+            {
+                eventType: EVENTS.INVENTORY_CHANGED,
+                payload: {
+                    itemId,
+                    quantity,
+                    source
+                }
             }
-        )
+        );
+        this.eventBus.emit(EVENTS.ITEM_REMOVED,
+            {
+                itemId,
+                quantity,
+                source,
+                inventory: this.list()
+            });
+        return this.getQuantity(itemId);
+    }
+
+    clear({ source = 'system'} = {}) {
+        const oldItems = this.list();
+
+        this.state.mutate(
+            'inventory.clear',
+            (state) => {
+                state.inventory.items = {};
+            },
+            {
+                eventType:
+                EVENTS.INVENTORY_CHANGED,
+                payload: {
+                    source
+                }
+            }
+        );
+
+        for (const [itemId, quantity] of Object.entries(oldItems)) {
+            this.eventBus.emit(
+                EVENTS.ITEM_REMOVED,
+                {
+                    itemId,
+                    quantity,
+                    source,
+                    inventory: this.list()
+                }
+
+            );
+        }
+    }
+    _getItemDefinition(itemId) {
+        const definition =
+            this.itemCatalog[itemId];
+
+        if (!definition) {
+            throw new NotFoundError(
+                `Unknown item: ${itemId}`
+            );
+        }
+        return definition;
     }
 }
