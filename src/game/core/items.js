@@ -40,7 +40,7 @@ export const ITEMS = deepFreeze({
         tags: ['rocket', 'progression']
     },
 
-    fuel_sysyem: {
+    fuel_system: {
         id: 'fuel_system',
         name: 'Fuel System',
         description: 'A compact fuel-management assembly',
