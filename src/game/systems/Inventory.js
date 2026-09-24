@@ -7,6 +7,7 @@ import {
     assertPositiveInteger
 } from "../core/utils.js";
 
+
 export class Inventory{
     constructor({
         state,
@@ -17,6 +18,7 @@ export class Inventory{
         this.eventBus = eventBus;
         this.itemCatalog = itemCatalog;
     }
+
     getCapacity() {
         return this.state.read(
             (state) => state.inventory.capacity
@@ -64,7 +66,7 @@ export class Inventory{
 
         let used = 0;
 
-        for (const [itemId, quantity] of Object.enteries(items)) {
+        for (const [itemId, quantity] of Object.entries(items)) {
             const definition = this._getItemDefinition(itemId);
 
             used += Math.ceil(
@@ -88,7 +90,7 @@ export class Inventory{
             current / definition.stackSize
         );
 
-        const newStacks = MAth.ceil(
+        const newStacks = Math.ceil(
             (current + quantity) / definition.stackSize
         );
 
@@ -107,9 +109,114 @@ export class Inventory{
         };
     }
 
-    canADDBundle(items) {
+    canAddBundle(items) {
         const projected = {
             ...this.list()
         };
+
+        let usedSlots = this.getUsedSlots();
+
+        for (const [itemId, quantity] of Object.entries(items)) {
+            assertPositiveInteger(quantity, `quantity for ${itemId} `);
+
+          const definition =
+              this._getItemDefinition(itemId);
+          const oldQuantity =
+              projected[itemId] ?? 0;
+
+          const oldStacks =
+              Math.ceil(oldQuantity / definition.stackSize);
+
+          const newQuantity =
+              oldQuantity + quantity;
+
+          const newStacks =
+              Math.ceil(newQuantity / definition.stackSize);
+
+          usedSlots += Math.max(
+              0,
+              newStacks - oldStacks
+          );
+
+          projected[itemId] = newQuantity;
+        }
+
+        return {
+            ok: usedSlots <= this.getCapacity(),
+            projectedSlots: usedSlots,
+            freeSlotsAfter:
+            this.getCapacity() - usedSlots
+        };
+    }
+    add(
+        itemId,
+        quantity = 1,
+        { source = 'gameplay'
+        } = {}
+    ) {
+        assertPositiveInteger(quantity, 'quantity');
+
+        this._getItemDefinition(itemId);
+
+        const capacityCheck =
+            this.canAdd(itemId, quantity);
+        if (!capacityCheck.ok) {
+            throw new InventoryError(
+                `Not enough inventory space for ${quantity} x ${itemId}.`
+            );
+        }
+        this.state.mutate(
+            'inventory.add',
+            (state) => {
+                state.inventory.items[itemId] =
+                    (state.inventory.items[itemId] ?? 0)
+                + quantity ;
+            },
+            {
+                eventType: EVENTS.INVENTORY_CHANGED,
+
+                payload: {
+                    itemId,
+                    quantity,
+                    source
+                }
+            }
+        );
+        this.eventBus.emit(
+            EVENTS.ITEM_ADDED,
+            {
+                itemId,
+                quantity,
+                source
+            }
+        );
+        return this.getQuantity(itemId);
+    }
+    remove(
+        itemId,
+        quantity =1,{
+            source = 'gameplay'
+        } = {}
+    ) {
+        assertPositiveInteger(quantity, 'quantity');
+
+        const current = this.getQuantity(itemId);
+
+        if(current < quantity) {
+            throw new InventoryError(
+                `Not enough ${itemId}. Required ${quantity}, have ${current}`
+            );
+        }
+
+        this.state.mutate(
+            'inventory.remove',
+            (state) => {
+                const next = state.inventory.items[itemId]
+                - quantity;
+               if(next === 0) {
+                   delete state.inventory.items[itemId]
+               }
+            }
+        )
     }
 }
