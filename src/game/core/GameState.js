@@ -128,4 +128,17 @@ export class GameState {
         });
         return this.getSnapshot();
     }
+    replace(nextState, {emit = true} = {}) {
+        const snapshot = deepClone(nextState);
+
+        validateStateShape(snapshot);
+
+        if (emit) {
+            this.eventBus?.emit(EVENTS.STATE_CHANGED, {
+                label: 'replace',
+                state: this.getSnapshot()
+            });
+        }
+        return this.getSnapshot()
+    }
 }
