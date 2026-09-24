@@ -7,8 +7,10 @@ export class GameError extends Error {
 
     }
 }
-export class ValidationError extends Error {
-    constructor(message,details) {super(message, 'VALIDATION_ERROR', details);}
+export class ValidationError extends GameError {
+    constructor(message,details) {
+        super(message, 'VALIDATION_ERROR', details);
+    }
 }
 
 export class InventoryError extends GameError {
@@ -20,4 +22,12 @@ export class QuestError extends GameError {
 }
 export class InteractionError extends GameError {
     constructor(message,details) {super(message, 'INTERACTION_ERROR', details);}
+}
+export class NotFoundError extends GameError {
+    constructor(message,details) {
+        super(message, 'NOT_FOUND', details);
+    }
+}
+export class SaveError extends GameError {
+    constructor(message,details) {super(message, 'SAVE_ERROR', details);}
 }
