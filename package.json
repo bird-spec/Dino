@@ -1,9 +1,9 @@
 {
-  "name": "Dino-4d-hyperspace-gamplay",
+  "name": "Dino-4d-hyperspace-gameplay",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "despcriptiom": "Gameplay and systems layer for Dino: $D Hyperspace.",
+  "description": "Gameplay and systems layer for Dino: $D Hyperspace.",
   "scripts": {
     "test": "node --test"
   },
