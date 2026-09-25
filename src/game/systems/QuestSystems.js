@@ -33,7 +33,7 @@ export class QuestSystems {
         }
 
     }
-    getDefiniton(questId) {
+    getDefinition(questId) {
         const definition = this.questCatalog[questId];
         if (!definition) {
             throw new NotFoundError(
@@ -71,7 +71,7 @@ export class QuestSystems {
 
     start (questId) {
         const definition =
-            this.getDefiniton(questId);
+            this.getDefinition(questId);
 
         if (this.isCompleted(questId)) {
             throw new QuestError(
@@ -142,7 +142,7 @@ export class QuestSystems {
         amount = 1
     ) {
         const definition =
-            this.getDefiniton(questId);
+            this.getDefinition(questId);
 
         const objective =
             definition.objectives.find(
@@ -177,7 +177,7 @@ export class QuestSystems {
 
             {
                 eventType:
-                EVENTS.QUEST_STARTED,
+                EVENTS.QUEST_PROGRESS,
                 payload: {
                     questId,
                     objectiveId,
@@ -201,12 +201,12 @@ export class QuestSystems {
 
     complete(questId) {
         const definition =
-            this.getDefiniton(questId);
+            this.getDefinition(questId);
 
         const active =
             this.getState(questId);
 
-        if(!this._getComplete(questId)) {
+        if(!this._isComplete(questId)) {
             throw new QuestError(
                 `Quest ${questId} is not complete.`
             );
@@ -293,7 +293,7 @@ export class QuestSystems {
 
         for (const questId of activeQuests) {
             const definition =
-                this.getDefiniton(questId);
+                this.getDefinition(questId);
 
             for(const objective of definition.objectives) {
                 const progress =
@@ -390,7 +390,7 @@ export class QuestSystems {
             const [key,expected]
             of Object.entries(requiredFlags)
         ) {
-            if (flag[key] !== expected) {
+            if (flags[key] !== expected) {
             throw new QuestError(
                 `Quest ${definition.id} requires story flag ${key}=${expected}.`
             );
@@ -446,7 +446,29 @@ export class QuestSystems {
             }
         );}
         if (rewards.storyFlags) {
-            for ()
+            for (
+                const [key, value]
+                of Object.entries(
+                    rewards.storyFlags
+            )
+            ) {
+                this.state.mutate(
+                    'quest.rewardFlag',
+                    (state) => {
+                        state.storyFlags[key] = value;
+                    },
+
+                    {
+                        eventType:
+                        EVENTS.STORY_FLAG_CHANGED,
+                        payload: {
+                            key,
+                            value,
+                            source: 'quest_reward',
+                        }
+                    }
+                )
+            }
         }
     }
 }
