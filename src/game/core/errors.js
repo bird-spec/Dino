@@ -29,5 +29,7 @@ export class NotFoundError extends GameError {
     }
 }
 export class SaveError extends GameError {
-    constructor(message,details) {super(message, 'SAVE_ERROR', details);}
+    constructor(message,details) {
+        super(message, 'SAVE_ERROR', details);
+    }
 }

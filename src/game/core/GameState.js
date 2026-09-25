@@ -6,10 +6,10 @@ export const STATE_SCHEMA_VERSION = 1
 
 export function createDefaultState() {
     return {
-        SchemaVersion: STATE_SCHEMA_VERSION,
+        schemaVersion: STATE_SCHEMA_VERSION,
 
         player: {
-            id: 'player'
+            id: 'player',
             xp: 0,
             level: 1
         },
@@ -56,7 +56,7 @@ export function createDefaultState() {
             transitCount: 0
         },
         world: {
-            discoveredNPcs: {},
+            discoveredNpcs: {},
             custom: {}
         }
     };
@@ -66,8 +66,8 @@ function validateStateShape(state) {
     if (!state || typeof state !== 'object') {
         throw new ValidationError('Game state must be an object.');
     }
-    if(state.schemeVersion !== STATE_SCHEMA_VERSION) {
-        throw new ValidationError(`unsupported state schema version: ${state.schemeVersion}`);
+    if(state.schemaVersion !== STATE_SCHEMA_VERSION) {
+        throw new ValidationError(`unsupported state schema version: ${state.schemaVersion}`);
     }const requiredObjects = [
     'player',
     'inventory',
@@ -132,6 +132,7 @@ export class GameState {
         const snapshot = deepClone(nextState);
 
         validateStateShape(snapshot);
+        this.data = snapshot;
 
         if (emit) {
             this.eventBus?.emit(EVENTS.STATE_CHANGED, {

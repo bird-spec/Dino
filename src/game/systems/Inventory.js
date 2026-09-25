@@ -187,7 +187,8 @@ export class Inventory{
             {
                 itemId,
                 quantity,
-                source
+                source,
+                inventory: this.list()
             }
         );
         return this.getQuantity(itemId);

@@ -1,4 +1,4 @@
-import { EVENTS } from './events';
+import { EVENTS } from '../core/events.js';
 import { deepFreeze } from "../core/utils.js";
 
 export const QUESTS = deepFreeze({
@@ -51,8 +51,8 @@ export const QUESTS = deepFreeze({
     },
     inspect_ancient_site: {
         id: 'inspect_ancient_site',
-        title: 'What is that?'
-        description: 'Inspect the ancient site for treasures'
+        title: 'What is that?',
+        description: 'Inspect the ancient site for treasures',
 
         prerequisites: {
             quests: ['gather_stone']
