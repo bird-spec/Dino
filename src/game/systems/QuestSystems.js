@@ -161,5 +161,192 @@ export class QuestSystems {
 
         const previous =
             active.objectives[objectiveId] ?? 0;
+
+        const next =
+            Math.min(
+                objective.target,
+                previous + amount
+            );
+        this.state.mutate(
+            'quest.updateObjective',
+
+            (state) => {
+                state.quests.active[questId]
+                    .objectives[objectiveId] = next;
+            },
+
+            {
+                eventType:
+                EVENTS.QUEST_STARTED,
+                payload: {
+                    questId,
+                    objectiveId,
+                    previous,
+                    progress : next,
+                    target: objective.target
+                }
+            }
+        );
+
+        if (this._isComplete(questId)) {
+            this.complete(questId);
+        }
+
+        return this.isCompleted(questId)
+        ? {
+            status: 'completed'
+            }
+        : this.getState(questId);
+    }
+
+    complete(questId) {
+        const definition =
+            this.getDefiniton(questId);
+
+        const active =
+            this.getState(questId);
+
+        if(!this._getComplete(questId)) {
+            throw new QuestError(
+                `Quest ${questId} is not complete.`
+            );
+        }
+
+        this._grantRewards(
+            definition.rewards ?? {}
+        );
+
+        this.state.mutate(
+            'quest.complete',
+            (state) => {
+                delete state.quests.active[questId];
+
+                state.quests.completed.push(
+                    questId
+                );
+            },
+
+            {
+                eventType:
+                EVENTS.QUEST_COMPLETED,
+                payload: {
+                    questId,
+                    active
+                }
+            }
+        );
+
+        return {
+            id: questId,
+            status: 'completed',
+            rewards: deepClone(
+                definition.rewards ?? {}
+            )
+        };
+    }
+
+    fail (
+        questId,
+        reason = 'Quest failed'
+    ) {
+        const active =
+            this.getState(questId);
+
+        this.state.mutate(
+            'quest.fail',
+
+            (state) => {
+                delete state.quests.active[questId];
+
+                state.quests.failed.push(
+                    questId
+                );
+            },
+            {
+                eventType:
+                EVENTS.QUEST_FAILED,
+                payload: {
+                    questId,
+                    reason,
+                    active
+                }
+            }
+        );
+
+
+        return {
+            id: questId,
+            status: 'failed',
+            reason
+        };
+    }
+
+    _handleGameplayEvent(
+        eventName,
+        payload
+    ) {
+        const activeQuests =
+            this.state.read(
+                (state) =>
+                    Object.keys(state.quests.active)
+            );
+
+        for (const questId of activeQuests) {
+            const definition =
+                this.getDefiniton(questId);
+
+            for(const objective of definition.objectives) {
+                const progress =
+                    this.state.read(
+                        (state) =>
+                            state.quests.active[
+                                questId
+                                ]?.objectives[
+                                    objective.id
+                                ] ?? 0
+                    );
+
+                if (
+                    progress >= objective.target ||
+                    objective.trigger !== eventName
+                ) {
+                    continue;
+                }
+
+                if (
+                    !this._matches(
+                        objective.match ?? {},
+                        payload
+                    )
+                ) {
+                    continue;
+                }
+
+                const increment =
+                    Number.isFinite(
+                        payload?.quantity
+                    )
+                ? payload.quantity : 1;
+
+                this.updateObjective(
+                    questId,
+                    objective.id,
+                    Math.max(1, increment)
+                );
+
+                if(!this.isActive(questId)) {
+                    break;
+                }
+            }
+        }
+
+    }
+
+    _matches(match, payload) {
+        return Object.entries(match)
+            .every(
+                ([key, expected]) =>
+                    payload?.[key] === expected,
+            )
     }
 }
