@@ -51,7 +51,115 @@ export class QuestSystems {
 
     getCompleted() {
         return this.state.read(
-            state => ({...state.quests.active})
+            (state) => [...state.quests.completed]
         );
+    }
+
+    isCompleted(questId) {
+        return this.getCompleted()
+            .includes(questId);
+    }
+
+    isActive(questId) {
+        return Boolean(
+            this.state.read(
+                (state) => state.quests.active [questId]
+            )
+        );
+    }
+
+
+    start (questId) {
+        const definition =
+            this.getDefiniton(questId);
+
+        if (this.isCompleted(questId)) {
+            throw new QuestError(
+                `Quest ${questId} had already been completed`
+            );
+        }
+
+        if (this.isActive(questId)) {
+            return this.getState(questId);
+        }
+
+        this._checkPrerequisites(definition);
+
+        const objectives = {};
+
+        for(const objective of definition.objectives) {
+            objectives[objective.id] = 0;
+        }
+
+        this.state.mutate(
+            'quest.start',
+            (state) => {
+                state.quests.active[questId] = {
+                    id: questId,
+                    startedAt: new Date().toISOString(),
+                    objectives
+                };
+            },
+
+            {
+                eventType:
+                EVENTS.QUEST_STARTED,
+
+                payload: {
+                    questId
+                }
+            }
+        );
+
+        return this.getState(questId);
+    }
+
+    getState(questId) {
+        const active =
+            this.state.read(
+                (state) =>
+                    state.quests.active[questId]
+            );
+        if (!active) {
+            if (this.isCompleted(questId)) {
+                return {
+                    id: questId,
+                    status: 'completed'
+                };
+            }
+
+            throw new NotFoundError(
+                `quest is not active: ${questId}.`
+            );
+        }
+
+        return active;
+    }
+
+    updateObjective(
+        questId,
+        objectiveId,
+        amount = 1
+    ) {
+        const definition =
+            this.getDefiniton(questId);
+
+        const objective =
+            definition.objectives.find(
+                (candidate) =>
+                    candidate.id === objectiveId
+            );
+        if (!objective) {
+            throw new NotFoundError(
+                `Unknown objective ${objectiveId} in quest ${questId}.`
+            );
+        }
+
+
+        const active =
+            this.getState(questId);
+
+        const previous =
+            active.objectives[objectiveId] ?? 0;
     }
 }
