@@ -347,6 +347,106 @@ export class QuestSystems {
             .every(
                 ([key, expected]) =>
                     payload?.[key] === expected,
-            )
+            );
+    }
+
+    _isComplete(questId) {
+        const definition =
+            this.getDefiniton(questId);
+
+        const active =
+            this.getState(questId);
+
+        return definition.objectives
+            .every(
+                (objective) =>
+                    (active.objectives[
+                        objective.id
+                            ] ?? 0) >= objective.target
+            );
+    }
+    _checkPrerequisites(definition) {
+        const requiredQuests =
+            definition.prerequisites?.quests
+        ?? [];
+
+        for (const questId of requiredQuests) {
+            if (!this.isCompleted(questId)) {
+                throw new QuestError(
+                    `Quest ${definition.id} requires completed quest ${questId}. `
+                );
+            }
+        }
+
+        const requiredFlags =
+            definition.prerequisites?.flags
+        ?? {} ;
+
+        const flags = this.state.read(
+            (state) => state.storyFlags
+        );
+
+        for (
+            const [key,expected]
+            of Object.entries(requiredFlags)
+        ) {
+            if (flag[key] !== expected) {
+            throw new QuestError(
+                `Quest ${definition.id} requires story flag ${key}=${expected}.`
+            );
+            }
+        }
+    }
+    _grantRewards(rewards) {
+        if (rewards.items) {
+            const check =
+                this.inventory.canAddBundle(
+                    rewards.items
+                );
+            if (!check.ok) {
+            throw new QuestError(
+                'Not enough inventory for quest rewards,'
+            );
+        }
+        for (
+            const [itemId, quantity]
+            of Object.entries(rewards.items)
+        ) {
+            this.inventory.add (
+                itemId,
+                quantity,
+                {
+                    source: 'quest_reward'
+                }
+            );
+        }
+    }
+        if (
+            Number.isFinite(rewards.xp) &&
+            rewards.xp > 0
+        ) {
+        this.state.mutate(
+            'quest.rewardXP',
+            (state) => {
+                state.player.xp +=
+                    rewards.xp;
+                state.player.level =
+                    1 +
+                    Math.floor(
+                        state.player.xp / 100
+                    );
+            },
+            {
+                eventType:
+                EVENTS.STATE_CHANGED,
+                payload: {
+                    source: 'quest_reward',
+                    xp: rewards.xp
+                }
+            }
+        );}
+        if (rewards.storyFlags) {
+            for ()
+        }
     }
 }
