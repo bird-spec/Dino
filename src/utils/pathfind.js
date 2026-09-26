@@ -1,5 +1,5 @@
 let rows = 5
-let cols = 5
+let cols = 5 // these need to inherint from terrian or NPC.js
 let grid = new Array(cols);
 
 let openSet = []
@@ -44,7 +44,7 @@ function gridPoint(x,y){
     };
 }
 
-function init {
+function init() {
     for (let i = 0; i < cols; i++) {
         grid[i] = new Array(rows);
     }
@@ -65,13 +65,62 @@ function init {
     end = grid[cols-1][rows-1];
 }
 
-
+//testy westy i like to tyepe please help me AHHHHHHHHHHHHHHHHHHHHHHHH
 
 
 
 
 
 export function pathfind() {
+    init()
 
+    while (openSet.length > 0) {
+        let lowestValue = 0;
 
+        for (let i = 0; i < openSet.length; i++) {
+            if (openSet[i].f < lowestValue) {
+                lowestValue = openSet[i].f;
+            }
+        }
+        let current = openSet[lowestValue];
+
+        if (current === end) {
+            let temp = current;
+            path.push(temp);
+            while (temp.parent) {
+                path.push(temp.parent);
+                temp = temp.parent;
+            }
+            console.log("path found");
+            return path.reverse();
+        }
+
+        openSet.splice(openSet.indexOf(current), 1);
+        closedSet.push(current);
+        //current.isWall = false; // for when i add Z stuff for 2d path finding
+
+        let neighbors = current.neighbors;
+
+        for (let i = 0; i < neighbors.length; i++) {
+            let neighbor = neighbors[i];
+
+            if (!closedSet.includes(neighbor)) {
+                let possibleG = current.g + 1;
+
+                if (!openSet.includes(neighbor)) {
+                    openSet.push(neighbor);
+                } else if (possibleG >= neighbor.g) {
+                    continue;
+                }
+
+                neighbor.g = possibleG;
+                neighbor.h = heuristic(neighbor, end);
+                neighbor.f = neighbor.g + neighbor.h;
+                neighbor.parent = current;
+            }
+        }
+
+    }
+
+    return []
 }

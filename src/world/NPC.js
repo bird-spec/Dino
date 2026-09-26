@@ -36,11 +36,13 @@ function PathFind(NPC, target){//NPC = ID to npc same w/ target
     // i hate algorithms
     const targetCoords = Finding(target);
     let NPCcoords = Finding(NPC);
-    
+
 }
 
 function Attack(){}
 
-function Move(){}
+function Move(NPC, direction, distance){
+    const npc = scene.getObjectByName(NPC);
+}
 
 function Shop(){}// this should use speech bubble partly
