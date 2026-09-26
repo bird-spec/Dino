@@ -1,0 +1,1 @@
+// how many objects/movements  the browser can handle
