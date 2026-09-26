@@ -1,24 +1,29 @@
 // Easy 3D model import just import model . js, whenever needed
 import * as THREE from "three";
-import {GLTFLoader} from "three/addons";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-const scene = new THREE.Scene();
 const loader = new GLTFLoader();
 
-function loadModel(path, x,y,z, scaleX,scaleY,scaleZ) {
-    loader.load(path, (gltf) => {
-        gltf.scene.position.set(x,y,z);
-        scene.add(gltf.scene);
+export function loadModel(path, x, y, z, scaleX, scaleY, scaleZ) {
+  return new Promise((resolve, reject) => {
+    loader.load(
+      path,
+      (gltf) => {
+        const model = gltf.scene;
+        model.position.set(x, y, z);
         if (scaleX && scaleY && scaleZ != null) {
-            gltf.scene.scale.set(scaleX,scaleY,scaleZ);
+          model.scale.set(scaleX, scaleY, scaleZ);
         }
-
-    },
-         function (xhr) {
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    },
-        (error) => {
-        console.error('An error happened', error);
-        });
+        resolve(model);
+      },
+      function (xhr) {
+        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      },
+      (error) => {
+        console.error("An error happened", error);
+        reject(error);
+      },
+    );
+  });
 }
 export default loadModel;
