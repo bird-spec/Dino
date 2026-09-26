@@ -17,6 +17,9 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
     Right_Leg: 0x16a34a,
   };
 
+  const legL = model.getObjectByName("Left_Leg");
+  const legR = model.getObjectByName("Right_Leg");
+
   const meshes = [];
   model.traverse((o) => {
     if (o.isMesh) meshes.push(o);
@@ -31,8 +34,33 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
     });
   }
 
+  model.userData.baseY = y;
+  model.userData.legL = legL;
+  model.userData.legR = legR;
+  model.userData.legL_home = legL.position.clone();
+  model.userData.legR_home = legR.position.clone();
+  model.userData.rotateZ = model.rotation.z;
+
   scene.add(model);
   return model;
+}
+
+export function runDino(model, time, speed) {
+  const t = (time / 1000) * 10 * speed;
+  const stride = 0.35;
+  const lift = 0.25;
+
+  const { legL, legR, legL_home, legR_home, baseY, rotateZ } = model.userData;
+
+  legL.position.z = legL_home.z - Math.sin(t) * stride;
+  legL.position.y = legL_home.y + Math.max(0, Math.cos(t)) * lift;
+
+  legR.position.z = legR_home.z - Math.sin(t + Math.PI) * stride;
+  legR.position.y = legR_home.y + Math.max(0, Math.cos(t + Math.PI)) * lift;
+
+  model.position.y = baseY + Math.abs(Math.sin(t)) * 0.08 * speed;
+
+  model.rotation.z = rotateZ + Math.sin(t) * 0.01 * speed;
 }
 
 export default spawnCharacter;
