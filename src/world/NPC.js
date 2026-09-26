@@ -32,7 +32,6 @@ function spawnNPC(name, x, y, z, scaleX, scaleY, scaleZ) {
 }
 
 function PathFind(NPC, target){//NPC = ID to npc same w/ target
-    //im thinking A*, perfect time to learn this algo!
     // i hate algorithms
     const targetCoords = Finding(target);
     let NPCcoords = Finding(NPC);

@@ -118,3 +118,5 @@ export function pathfind(zLevel) {
 
     return []
 }
+
+//NOT COMPLETE JUST GENERIC VERSION

@@ -21,3 +21,4 @@ const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, wireframe: tr
 const terrain = new THREE.Mesh(geometry, material);
 scene.add(terrain);
 
+// this works just need to fix Z levels and add like models and biomes/periods? idk yet
