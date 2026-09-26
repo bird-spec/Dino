@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { spawnCharacter, runDino } from "./runtime/character.js";
+import { spawnCharacter, runDino, jumpDino } from "./runtime/character.js";
 
 /*
 const scene = new THREE.Scene();
@@ -75,8 +75,14 @@ function animate(time) {
   if (keys["w"]) {
     let speed = keys["Shift"] ? 2 : 1;
     model.position.z -= keys["Shift"] ? 0.2 : 0.1;
-    runDino(model, time, speed);
+    runDino(model, time, speed, "forward");
   }
+  if (keys["s"]) {
+    let speed = 1;
+    model.position.z += 0.1;
+    runDino(model, time, speed, "backward");
+  }
+  jumpDino(model, time, !!keys[" "]);
 
   camera.position.z = model.position.z + 12;
   camera.position.y = 5;
