@@ -9,3 +9,6 @@ This is for shared utils. If you think a certain function could be needed by oth
 - NPC(not a util wrong place ik): basic Npc framework to spawn them in and have them speak
 - model: util to load in 3d models
 - find: find the absolute coordinates of a model/entity(cutscenes(cam), pathfinding, etc useful for)
+
+### Note for current Utils to work!!!!
+Please use mesh/object.name = "ID whatever" the format doesnt matter too much just needed for many of these utils
