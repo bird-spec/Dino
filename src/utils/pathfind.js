@@ -1,5 +1,5 @@
-let rows = 5
-let cols = 5 // these need to inherint from terrian or NPC.js
+let rows = 100
+let cols = 100 // these need to inherint from terrian or NPC.js for now it just matches
 let grid = new Array(cols);
 
 let openSet = []
@@ -65,13 +65,7 @@ function init() {
     end = grid[cols-1][rows-1];
 }
 
-//testy westy i like to tyepe please help me AHHHHHHHHHHHHHHHHHHHHHHHH
-
-
-
-
-
-export function pathfind() {
+export function pathfind(zLevel) {
     init()
 
     while (openSet.length > 0) {
