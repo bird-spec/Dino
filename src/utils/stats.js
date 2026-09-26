@@ -24,7 +24,11 @@ function CalcFPS() {
     if (currentTime - lastUiUpdate > 100) {
         const dropfps = Math.min(...fpsHistory);
         console.log(`FPS: ${averageFps.toFixed(2)} | Droppped FPS: ${dropfps.toFixed(2)}`);
+            return {averageFps, dropfps};
+
     }
+    return averageFps;
 }
 
 //yippe this should log fps
+export default CalcFPS;
