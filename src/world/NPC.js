@@ -31,4 +31,3 @@ function spawnNPC(name, x, y, z, scaleX, scaleY, scaleZ) {
     return npc;
 }
 
-//yay...
