@@ -21,4 +21,3 @@ const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, wireframe: tr
 const terrain = new THREE.Mesh(geometry, material);
 scene.add(terrain);
 
-//temp till we get models
