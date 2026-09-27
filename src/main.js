@@ -82,6 +82,5 @@ function animate(time) {
   jumpDino(model, time, !!keys[" "]);
 
   updateThirdPov(camera, model);
-
   renderer.render(scene, camera);
 }

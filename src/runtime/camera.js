@@ -4,6 +4,29 @@ let yaw = 0;
 let pitch = 0;
 let listening = false;
 
+const SIDE = 4;
+const HEIGHT = 3.5;
+const BACK = 9;
+const AHEAD = 10;
+
+export function updateThirdPov(camera, model) {
+  const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+  const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+
+  camera.position
+    .copy(model.position)
+    .addScaledVector(forward, -BACK)
+    .addScaledVector(right, SIDE);
+  camera.position.y += HEIGHT;
+
+  const lookTarget = model.position
+    .clone()
+    .addScaledVector(forward, AHEAD)
+    .addScaledVector(right, SIDE * 0.3);
+  lookTarget.y += 2 - pitch * 10;
+  camera.lookAt(lookTarget);
+}
+
 export function ThirdPov(scene, model) {
   const camera = new THREE.PerspectiveCamera(
     75,
@@ -12,6 +35,8 @@ export function ThirdPov(scene, model) {
     1000,
   );
   const sensitivity = 0.002;
+
+  yaw = model.rotation.y;
 
   if (!listening) {
     listening = true;
@@ -25,20 +50,12 @@ export function ThirdPov(scene, model) {
         pitch -= e.movementY * sensitivity;
         pitch = Math.max(-0.5, Math.min(0.5, pitch));
 
-        model.rotation.x = pitch;
         model.rotation.y = yaw;
       }
     });
   }
 
-  return camera;
-}
+  updateThirdPov(camera, model);
 
-export function updateThirdPov(camera, model) {
-  camera.position.set(
-    model.position.x + Math.sin(yaw) * 12 - 5,
-    model.position.y + 5 + pitch * 10,
-    model.position.z + Math.cos(yaw) * 12,
-  );
-  camera.lookAt(model.position.x, model.position.y, model.position.z);
+  return camera;
 }
