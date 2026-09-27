@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { loadModel } from "../utils/model.js";
+import { getYaw } from "./camera.js";
 
 export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   const model = await loadModel("/dino.glb", x, y, z, scale, scale, scale);
@@ -45,46 +46,50 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   model.userData.legL_home = legL.position.clone();
   model.userData.legR_home = legR.position.clone();
   model.userData.rotateZ = model.rotation.z;
+  model.userData.rotateY = model.rotation.y;
   model.userData.body = body;
 
   scene.add(model);
   return model;
 }
 
-export function runDino(model, time, speed, direction) {
+const TURN_SPEED = 8;
+
+export function turnDino(model, targetYaw, time) {
+  const last = model.userData.lastTurnTime;
+  let dt = 1 / 60;
+  if (last !== undefined && time !== undefined) {
+    dt = Math.min(0.05, Math.max(0.0001, (time - last) / 1000));
+  }
+  model.userData.lastTurnTime = time;
+
+  let d = (targetYaw - model.rotation.y) % (Math.PI * 2);
+  if (d > Math.PI) d -= Math.PI * 2;
+  if (d < -Math.PI) d += Math.PI * 2;
+
+  model.rotation.y += d * (1 - Math.exp(-TURN_SPEED * dt));
+}
+
+export function runDino(model, time, speed, deg = 0) {
   const t = (time / 1000) * 10 * speed;
   const stride = 0.35;
   const lift = 0.25;
 
   const { legL, legR, legL_home, legR_home, baseY, rotateZ } = model.userData;
 
-  if (direction === "forward") {
-    legL.position.z = legL_home.z - Math.sin(t) * stride;
-    legL.position.y = legL_home.y + Math.max(0, Math.cos(t)) * lift;
+  turnDino(model, getYaw() + THREE.MathUtils.degToRad(deg), time);
 
-    legR.position.z = legR_home.z - Math.sin(t + Math.PI) * stride;
-    legR.position.y = legR_home.y + Math.max(0, Math.cos(t + Math.PI)) * lift;
+  legL.position.z = legL_home.z - Math.sin(t) * stride;
+  legL.position.y = legL_home.y + Math.max(0, Math.cos(t)) * lift;
 
-    if (!model.userData.isFlying) {
-      model.position.y = baseY + Math.abs(Math.sin(t)) * 0.08 * speed;
-    }
+  legR.position.z = legR_home.z - Math.sin(t + Math.PI) * stride;
+  legR.position.y = legR_home.y + Math.max(0, Math.cos(t + Math.PI)) * lift;
 
-    model.rotation.z = rotateZ + Math.sin(t) * 0.01 * speed;
-  } else if (direction === "backward") {
-    legL.position.z = legL_home.z + Math.sin(t) * stride;
-    legL.position.y = legL_home.y + Math.max(0, Math.cos(t)) * lift;
-
-    legR.position.z = legR_home.z + Math.sin(t + Math.PI) * stride;
-    legR.position.y = legR_home.y + Math.max(0, Math.cos(t + Math.PI)) * lift;
-
-    if (!model.userData.isFlying) {
-      model.position.y = baseY + Math.abs(Math.sin(t)) * 0.08 * speed;
-    }
-
-    model.rotation.z = rotateZ + Math.sin(t) * 0.01 * speed;
-  } else if (direction === "left") {
-  } else if (direction === "right") {
+  if (!model.userData.isFlying) {
+    model.position.y = baseY + Math.abs(Math.sin(t)) * 0.08 * speed;
   }
+
+  model.rotation.z = rotateZ + Math.sin(t) * 0.01 * speed;
 }
 
 export function jumpDino(model, time, pressing) {
