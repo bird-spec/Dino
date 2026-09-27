@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { spawnCharacter, runDino, jumpDino } from "./runtime/character.js";
+import { ThirdPov, updateThirdPov } from "./runtime/camera.js";
 
 /*
 const scene = new THREE.Scene();
@@ -34,15 +35,9 @@ function animate(time) {
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000,
-);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(window.outerWidth, window.outerHeight);
 document.body.appendChild(renderer.domElement);
 
 const color = 0xffffff;
@@ -68,10 +63,12 @@ const keys = {};
 addEventListener("keydown", (e) => (keys[e.key] = true));
 addEventListener("keyup", (e) => (keys[e.key] = false));
 
-function animate(time) {
-  model.rotation.x = 0;
-  model.rotation.y = THREE.MathUtils.degToRad(10);
+model.rotation.x = 0;
+model.rotation.y = THREE.MathUtils.degToRad(10);
 
+const camera = ThirdPov(scene, model);
+
+function animate(time) {
   if (keys["w"]) {
     let speed = keys["Shift"] ? 2 : 1;
     model.position.z -= keys["Shift"] ? 0.2 : 0.1;
@@ -84,9 +81,7 @@ function animate(time) {
   }
   jumpDino(model, time, !!keys[" "]);
 
-  camera.position.z = model.position.z + 12;
-  camera.position.y = 5;
-  camera.position.x = model.position.x - 5;
+  updateThirdPov(camera, model);
 
   renderer.render(scene, camera);
 }
