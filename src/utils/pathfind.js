@@ -1,5 +1,5 @@
 let rows = 100
-let cols = 100 // these need to inherint from terrian or NPC.js for now it just matches
+let cols = 100 // these need to inherent from terrain or NPC.js for now it just matches
 let grid = new Array(cols);
 
 let openSet = []
@@ -25,6 +25,7 @@ function gridPoint(x,y){
     this.h = 0;
     this.parent = null;
     this.neighbors = []
+    this.isObstacle = false;
 
     this.updateNeighbors = function(grid){
         let i = this.x;
@@ -61,6 +62,9 @@ function init() {
         }
     }
 
+    //this is where i need the obsetucal stuff
+    //grid[x][y].isObstacle = true;
+
     start = grid[0][0];
     end = grid[cols-1][rows-1];
 }
@@ -91,13 +95,15 @@ export function pathfind(zLevel) {
 
         openSet.splice(openSet.indexOf(current), 1);
         closedSet.push(current);
-        //current.isWall = false; // for when i add Z stuff for 2d path finding
+
 
         let neighbors = current.neighbors;
 
         for (let i = 0; i < neighbors.length; i++) {
             let neighbor = neighbors[i];
-
+            if (neighbor.isObstacle || closedSet.includes(neighbor)) {
+                continue;
+            }
             if (!closedSet.includes(neighbor)) {
                 let possibleG = current.g + 1;
 
@@ -119,4 +125,4 @@ export function pathfind(zLevel) {
     return []
 }
 
-//NOT COMPLETE JUST GENERIC VERSION
+//Todo: make sure to finish is neighbor stuff

@@ -9,6 +9,40 @@ const widthSegments = 100;
 const heightSegments = 100;
 const geometry = new THREE.BufferGeometry();
 
+
+const prehistoric = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+
+const iceAge = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+
+const modern = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+
+const postModern = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+//^^^^^^^ All tempoary placeholders
+
 const vertices = [];
 for (let x = 0; x <= widthSegments; x++) {
     for (let z = 0; z <= heightSegments; z++) {
