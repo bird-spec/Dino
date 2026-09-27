@@ -23,7 +23,7 @@ export function updateThirdPov(camera, model) {
     .clone()
     .addScaledVector(forward, AHEAD)
     .addScaledVector(right, SIDE * 0.3);
-  lookTarget.y += 2 - pitch * 10;
+  lookTarget.y -= 2 - pitch * 10;
   camera.lookAt(lookTarget);
 }
 

@@ -36,6 +36,12 @@ function animate(time) {
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
 
+const pointer = document.createElement("div");
+
+pointer.classList.add("pointer");
+
+document.body.append(pointer);
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.outerWidth, window.outerHeight);
 document.body.appendChild(renderer.domElement);
@@ -71,12 +77,12 @@ const camera = ThirdPov(scene, model);
 function animate(time) {
   if (keys["w"]) {
     let speed = keys["Shift"] ? 2 : 1;
-    model.position.z -= keys["Shift"] ? 0.2 : 0.1;
+    model.translateZ(-0.1 * speed);
     runDino(model, time, speed, "forward");
   }
   if (keys["s"]) {
     let speed = 1;
-    model.position.z += 0.1;
+    model.translateZ(0.1);
     runDino(model, time, speed, "backward");
   }
   jumpDino(model, time, !!keys[" "]);
