@@ -1,7 +1,7 @@
 // how many objects/movements  the browser can handle
 import * as THREE from 'three';
 import CalcFPS from "./stats.js";
-import scene from "three/addons/offscreen/scene.js";
+const scene = new THREE.Scene();
 
 function stressTest() {
     for (let i = 0; i < 10; i++){

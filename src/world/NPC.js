@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import loadModel from "../utils/model.js";
 import Finding from "../utils/find.js";
-import scene from "three/addons/offscreen/scene.js";
+const scene = new THREE.Scene();
 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
@@ -32,7 +32,6 @@ function spawnNPC(name, x, y, z, scaleX, scaleY, scaleZ) {
 }
 
 function PathFind(NPC, target){//NPC = ID to npc same w/ target
-    //im thinking A*, perfect time to learn this algo!
     // i hate algorithms
     const targetCoords = Finding(target);
     let NPCcoords = Finding(NPC);
@@ -41,8 +40,17 @@ function PathFind(NPC, target){//NPC = ID to npc same w/ target
 
 function Attack(){}
 
-function Move(NPC, direction, distance){
+function Move(NPC, direction, distance){// direction needs to be X Y or Z!!! string no spaces!
     const npc = scene.getObjectByName(NPC);
+    if (direction === "X") {
+        npc.position.x += distance;
+    }
+    if (direction === "Y") {
+        npc.position.y += distance;
+    }
+    if (direction === "Z") { // z probally will never be used but can work for jumping
+        npc.position.z += distance;
+    }
 }
 
 function Shop(){}// this should use speech bubble partly
