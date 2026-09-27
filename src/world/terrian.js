@@ -25,3 +25,4 @@ const terrain = new THREE.Mesh(geometry, material);
 scene.add(terrain);
 
 // this works just need to fix Z levels and add like models and biomes/periods? idk yet
+// for next ship tho
