@@ -4,6 +4,7 @@ import { loadModel } from "../utils/model.js";
 export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   const model = await loadModel("/dino.glb", x, y, z, scale, scale, scale);
   model.name = name;
+  model.scale.x *= 1.35;
 
   const colors = {
     Body: 0x4ade80,
@@ -33,6 +34,7 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
       roughness: 0.8,
       metalness: 0.0,
     });
+    m.castShadow = true;
   }
 
   model.userData.baseY = y;

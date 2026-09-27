@@ -48,7 +48,7 @@ export function ThirdPov(scene, model) {
       if (document.pointerLockElement === document.body) {
         yaw -= e.movementX * sensitivity;
         pitch -= e.movementY * sensitivity;
-        pitch = Math.max(-0.5, Math.min(0.5, pitch));
+        pitch = Math.max(-1, Math.min(2, pitch));
 
         model.rotation.y = yaw;
       }
