@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import loadModel from "../utils/model.js";
 import Finding from "../utils/find.js";
-import scene from "three/addons/offscreen/scene.js";
+const scene = new THREE.Scene();
 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');

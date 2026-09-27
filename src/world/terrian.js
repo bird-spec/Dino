@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import loadModel from "../utils/model.js";
+const scene = new THREE.Scene();
+//TODO remove new scene in prod/not testing!!!!!!
+//GOES FOR ALL MI FILES
 
 
 const widthSegments = 100;

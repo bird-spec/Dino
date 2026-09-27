@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import scene from "three/addons/offscreen/scene.js";
+const scene = new THREE.Scene();
 //Tool to find X Y Z of an object(NPCs) so camera can focus on them
 
 function Find(objectID) {
