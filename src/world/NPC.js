@@ -32,15 +32,17 @@ function spawnNPC(name, x, y, z, scaleX, scaleY, scaleZ) {
 }
 
 function PathFind(NPC, target){//NPC = ID to npc same w/ target
-    // i hate algorithms
     const targetCoords = Finding(target);
     let NPCcoords = Finding(NPC);
+
+    //plugin in pathfind.js later
 
 }
 
 function Attack(){}
 
 function Move(NPC, direction, distance){// direction needs to be X Y or Z!!! string no spaces!
+    // negative = opposite
     const npc = scene.getObjectByName(NPC);
     if (direction === "X") {
         npc.position.x += distance;
@@ -48,7 +50,7 @@ function Move(NPC, direction, distance){// direction needs to be X Y or Z!!! str
     if (direction === "Y") {
         npc.position.y += distance;
     }
-    if (direction === "Z") { // z probally will never be used but can work for jumping
+    if (direction === "Z") { // z probably will never be used but can work for jumping
         npc.position.z += distance;
     }
 }

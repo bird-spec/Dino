@@ -9,6 +9,40 @@ const widthSegments = 100;
 const heightSegments = 100;
 const geometry = new THREE.BufferGeometry();
 
+
+const prehistoric = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+
+const iceAge = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+
+const modern = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+
+const postModern = {
+    "name": "prehistoric",
+    "depth": 100,
+    "peaks": 100,
+    "palete": ["blue","orange","red"],
+    "props": ["prop1","prop2","prop3"]
+}
+//^^^^^^^ All tempoary placeholders
+
 const vertices = [];
 for (let x = 0; x <= widthSegments; x++) {
     for (let z = 0; z <= heightSegments; z++) {
@@ -23,6 +57,12 @@ geometry.computeVertexNormals();
 const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, wireframe: true });
 const terrain = new THREE.Mesh(geometry, material);
 scene.add(terrain);
+//fix/edit old test code above ^^
 
-// this works just need to fix Z levels and add like models and biomes/periods? idk yet
-// for next ship tho
+
+function scatterTerrianProps(propModels,period){// each model should = {"prop": wtv "biome":"wtv"}
+    //need to make various rules for generation + random
+
+}
+
+//ToDO: FIX THIS HORRID SPELLING!!!!
