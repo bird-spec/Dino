@@ -2,7 +2,7 @@ import { EVENTS } from './events.js'
 import { ValidationError } from './errors.js';
 import { deepClone} from "./utils.js";
 
-export const STATE_SCHEMA_VERSION = 1
+export const STATE_SCHEMA_VERSION = 2
 
 export function createDefaultState() {
     return {
@@ -29,6 +29,7 @@ export function createDefaultState() {
 
         storyFlags:{},
 
+
         era:{
             current: 'prehistory',
             unlocked: ['prehistory']
@@ -40,7 +41,13 @@ export function createDefaultState() {
 
         progression: {
             rocket: {
-                parts: {},
+                parts: {
+                    frame: false,
+                    engine: false,
+                    fuelSystem: false,
+                    guidance: false,
+                    hyperspaceCore: false
+                },
                 fuelCells: 0,
                 launchCount: 0,
             }
@@ -59,6 +66,7 @@ export function createDefaultState() {
             discoveredNpcs: {},
             custom: {}
         }
+
     };
 }
 

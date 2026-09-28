@@ -18,3 +18,4 @@ export const NPCS = deepFreeze({
         tags: ['mystery', 'hyperspace']
     }
 });
+//Not confirmed to be used in the game so pausing development for now
