@@ -70,6 +70,13 @@ export const ITEMS = deepFreeze({
         description: 'Fuel required for the rocket to launch.',
         stackSize: 5,
         tags: ['rocket', 'fuel']
+    },
 
+    rocket_frame:{
+        id: 'rocket_frame',
+        name: 'Rocket Frame',
+        description: 'Provides structure to the rocket ',
+        stackSize: 1,
+        tags: ['rocket', 'progression']
     }
 });
