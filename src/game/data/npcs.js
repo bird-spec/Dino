@@ -5,8 +5,16 @@ export const NPCS = deepFreeze({
         id: 'elara',
         name:'Dr.Elara Voss',
         role: 'Time researcher',
-        description: 'A stranded researcher studying the strange energy signature in the prehistoric zone.'
+        description: 'A stranded researcher studying the strange energy signature in the prehistoric zone.',
         dialogueId: 'elara_introduction',
         tags: ['researcher', 'story']
+    },
+
+    sentinel: {
+        id: 'sentinel',
+        name: 'Temporal Sentinel',
+        role: 'Unknown Construct',
+        description: ' An ancient machine-like entity guarding a hyperspace anomaly.',
+        tags: ['mystery', 'hyperspace']
     }
-})
+});
