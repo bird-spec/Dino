@@ -1,8 +1,14 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { spawnCharacter, runDino, jumpDino, turnDino } from "./runtime/character.js";
+import {
+  spawnCharacter,
+  runDino,
+  jumpDino,
+  turnDino,
+} from "./runtime/character.js";
 import { ThirdPov, updateThirdPov, getYaw } from "./runtime/camera.js";
 import { createSun, updateSun } from "./world/sun.js";
+import customizeCharacter from "./runtime/charactCustomization.jss";
 
 /*
 const scene = new THREE.Scene();
@@ -69,6 +75,20 @@ renderer.setAnimationLoop(animate);
 const keys = {};
 addEventListener("keydown", (e) => (keys[e.key] = true));
 addEventListener("keyup", (e) => (keys[e.key] = false));
+
+addEventListener("keydown", (e) => {
+  if (e.key === "r") {
+    const old = document.getElementById("customization-panel");
+
+    if (old) {
+      old.remove();
+      return;
+    }
+
+    if (document.exitPointerLock) document.exitPointerLock();
+    document.body.appendChild(customizeCharacter());
+  }
+});
 
 model.rotation.x = 0;
 model.rotation.y = THREE.MathUtils.degToRad(10);
