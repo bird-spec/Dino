@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { loadModel } from "../utils/model.js";
-import { getYaw } from "./camera.js";
+import { getYaw, getPitch } from "./camera.js";
 
 export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   const model = await loadModel("/dino.glb", x, y, z, scale, scale, scale);
@@ -22,6 +22,9 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   const legL = model.getObjectByName("Left_Leg");
   const legR = model.getObjectByName("Right_Leg");
   const body = model.getObjectByName("Body");
+  const head = model.getObjectByName("Head");
+  const eyeL = model.getObjectByName("Left_Eye");
+  const eyeR = model.getObjectByName("Right_Eye");
 
   const meshes = [];
   model.traverse((o) => {
@@ -48,6 +51,12 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   model.userData.rotateZ = model.rotation.z;
   model.userData.rotateY = model.rotation.y;
   model.userData.body = body;
+  model.userData.head = head;
+  model.userData.headX = head.rotation.x;
+  model.userData.eyeL = eyeL;
+  model.userData.eyeR = eyeR;
+  model.userData.eyeLX = eyeL.rotation.x;
+  model.userData.eyeRX = eyeR.rotation.x;
 
   scene.add(model);
   return model;
@@ -68,6 +77,15 @@ export function turnDino(model, targetYaw, time) {
   if (d < -Math.PI) d += Math.PI * 2;
 
   model.rotation.y += d * (1 - Math.exp(-TURN_SPEED * dt));
+
+  if (model.userData.head) {
+    const tilt = THREE.MathUtils.clamp(getPitch() * 0.3, -0.3, 0.3);
+    const k = 0.2;
+    const h = model.userData;
+    h.head.rotation.x += (h.headX + tilt - h.head.rotation.x) * k;
+    if (h.eyeL) h.eyeL.rotation.x += (h.eyeLX + tilt - h.eyeL.rotation.x) * k;
+    if (h.eyeR) h.eyeR.rotation.x += (h.eyeRX + tilt - h.eyeR.rotation.x) * k;
+  }
 }
 
 export function runDino(model, time, speed, deg = 0) {
