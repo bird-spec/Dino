@@ -35,3 +35,5 @@ export function orbits(sun, moon,sky,deltaTime){
         sky.material.uniforms['exposure'].value = Math.max(0.01, Math.min(0.5, (sunHeight + 0.2) * 0.5));
     }
 }
+
+//use the particles here later
