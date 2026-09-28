@@ -57,6 +57,12 @@ geometry.computeVertexNormals();
 const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, wireframe: true });
 const terrain = new THREE.Mesh(geometry, material);
 scene.add(terrain);
+//fix/edit old test code above ^^
 
-// this works just need to fix Z levels and add like models and biomes/periods? idk yet
-// for next ship tho
+
+function scatterTerrianProps(propModels,period){// each model should = {"prop": wtv "biome":"wtv"}
+    //need to make various rules for generation + random
+
+}
+
+//ToDO: FIX THIS HORRID SPELLING!!!!
