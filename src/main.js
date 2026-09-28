@@ -8,7 +8,7 @@ import {
 } from "./runtime/character.js";
 import { ThirdPov, updateThirdPov, getYaw } from "./runtime/camera.js";
 import { createSun, updateSun } from "./world/sun.js";
-import customizeCharacter from "./runtime/charactCustomization.jss";
+import customizeCharacter from "./runtime/characterCustomize.js";
 
 /*
 const scene = new THREE.Scene();
