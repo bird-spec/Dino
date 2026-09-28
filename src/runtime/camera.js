@@ -9,6 +9,14 @@ const HEIGHT = 3.5;
 const BACK = 9;
 const AHEAD = 10;
 
+export function getYaw() {
+  return yaw;
+}
+
+export function getPitch() {
+  return pitch;
+}
+
 export function updateThirdPov(camera, model) {
   const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
   const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
@@ -49,8 +57,6 @@ export function ThirdPov(scene, model) {
         yaw -= e.movementX * sensitivity;
         pitch -= e.movementY * sensitivity;
         pitch = Math.max(-1, Math.min(2, pitch));
-
-        model.rotation.y = yaw;
       }
     });
   }

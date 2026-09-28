@@ -1,8 +1,14 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { spawnCharacter, runDino, jumpDino } from "./runtime/character.js";
-import { ThirdPov, updateThirdPov } from "./runtime/camera.js";
+import {
+  spawnCharacter,
+  runDino,
+  jumpDino,
+  turnDino,
+} from "./runtime/character.js";
+import { ThirdPov, updateThirdPov, getYaw } from "./runtime/camera.js";
 import { createSun, updateSun } from "./world/sun.js";
+import customizeCharacter from "./runtime/characterCustomize.js";
 
 /*
 const scene = new THREE.Scene();
@@ -70,6 +76,20 @@ const keys = {};
 addEventListener("keydown", (e) => (keys[e.key] = true));
 addEventListener("keyup", (e) => (keys[e.key] = false));
 
+addEventListener("keydown", (e) => {
+  if (e.key === "r") {
+    const old = document.getElementById("customization-panel");
+
+    if (old) {
+      old.remove();
+      return;
+    }
+
+    if (document.exitPointerLock) document.exitPointerLock();
+    document.body.appendChild(customizeCharacter());
+  }
+});
+
 model.rotation.x = 0;
 model.rotation.y = THREE.MathUtils.degToRad(10);
 
@@ -79,14 +99,28 @@ function animate(time) {
   if (keys["w"]) {
     let speed = keys["Shift"] ? 2 : 1;
     model.translateZ(-0.1 * speed);
-    runDino(model, time, speed, "forward");
+    runDino(model, time, speed, 0);
   }
   if (keys["s"]) {
     let speed = 1;
-    model.translateZ(0.1);
-    runDino(model, time, speed, "backward");
+    model.translateZ(-0.1);
+    runDino(model, time, speed, 180);
+  }
+  if (keys["a"]) {
+    let speed = keys["Shift"] ? 2 : 1;
+    model.translateZ(-0.1 * speed);
+    runDino(model, time, speed, 90);
+  }
+  if (keys["d"]) {
+    let speed = keys["Shift"] ? 2 : 1;
+    model.translateZ(-0.1 * speed);
+    runDino(model, time, speed, 270);
   }
   jumpDino(model, time, !!keys[" "]);
+
+  if (!keys["w"] && !keys["s"] && !keys["a"] && !keys["d"]) {
+    turnDino(model, getYaw(), time);
+  }
 
   updateSun(sun, model);
   updateThirdPov(camera, model);
