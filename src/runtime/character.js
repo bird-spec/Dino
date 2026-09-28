@@ -57,6 +57,20 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   model.userData.eyeR = eyeR;
   model.userData.eyeLX = eyeL.rotation.x;
   model.userData.eyeRX = eyeR.rotation.x;
+  model.updateMatrixWorld(true);
+  const _hw = new THREE.Vector3();
+  const _bw = new THREE.Vector3();
+  head.getWorldPosition(_hw);
+  body.getWorldPosition(_bw);
+  const _dir = _bw
+    .sub(_hw)
+    .normalize()
+    .transformDirection(head.parent.matrixWorld.clone().invert());
+  model.userData.head_home = head.position.clone();
+  model.userData.eyeL_homeP = eyeL.position.clone();
+  model.userData.eyeR_homeP = eyeR.position.clone();
+  model.userData.headSink = _dir;
+  model.userData.sinkBase = 0.15;
 
   scene.add(model);
   return model;
@@ -85,7 +99,20 @@ export function turnDino(model, targetYaw, time) {
     h.head.rotation.x += (h.headX + tilt - h.head.rotation.x) * k;
     if (h.eyeL) h.eyeL.rotation.x += (h.eyeLX + tilt - h.eyeL.rotation.x) * k;
     if (h.eyeR) h.eyeR.rotation.x += (h.eyeRX + tilt - h.eyeR.rotation.x) * k;
+    const sink = h.sinkBase + Math.abs(tilt) * 0.5;
+    h.head.position.copy(h.head_home).addScaledVector(h.headSink, sink);
+    if (h.eyeL)
+      h.eyeL.position.copy(h.eyeL_homeP).addScaledVector(h.headSink, sink);
+    if (h.eyeR)
+      h.eyeR.position.copy(h.eyeR_homeP).addScaledVector(h.headSink, sink);
   }
+
+  const sink = h.sinkBase + Math.abs(tilt) * 0.5;
+  h.head.position.copy(h.head_home).addScaledVector(h.headSink, sink);
+  if (h.eyeL)
+    h.eyeL.position.copy(h.eyeL_homeP).addScaledVector(h.headSink, sink);
+  if (h.eyeR)
+    h.eyeR.position.copy(h.eyeR_homeP).addScaledVector(h.headSink, sink);
 }
 
 export function runDino(model, time, speed, deg = 0) {
