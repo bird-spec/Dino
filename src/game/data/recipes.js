@@ -9,7 +9,7 @@ export const RECIPES = deepFreeze({
 
         ingredients: {
             stone: 2,
-            fern_fiber: 3
+            fern_patch: 3
         },
 
         outputs: {

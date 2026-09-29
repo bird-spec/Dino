@@ -1,4 +1,4 @@
-import { deepFreeze } from '../core/utils'
+import { deepFreeze } from '../core/utils.js'
 
 export const NPCS = deepFreeze({
     elara: {
@@ -6,7 +6,7 @@ export const NPCS = deepFreeze({
         name:'Dr.Elara Voss',
         role: 'Time researcher',
         description: 'A stranded researcher studying the strange energy signature in the prehistoric zone.',
-        dialogueId: 'elara_introduction',
+        dialogueId: 'elara_intro',
         tags: ['researcher', 'story']
     },
 

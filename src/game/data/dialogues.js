@@ -8,12 +8,12 @@ export const DIALOGUES = deepFreeze({
 
         nodes: {
             start: {
-                text: 'Ypu made it through the temporal rift. That means the signal is real.',
+                text: 'You made it through the temporal rift. That means the signal is real.',
 
                 choices: [
                     {
                         id: 'who_are_you',
-                        test: 'Who are you?',
+                        text: 'Who are you?',
                         next: 'identity'
                     },
 

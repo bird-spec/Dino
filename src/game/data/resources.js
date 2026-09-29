@@ -31,4 +31,4 @@ export const RESOURCE_TYPES = deepFreeze({
         yieldItemId: 'resin',
         defaultYieldPerHarvest: 1
     }
-})
+});
