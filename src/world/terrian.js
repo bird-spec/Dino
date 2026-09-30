@@ -25,7 +25,6 @@ const iceAge = {
     "palete": ["blue","orange","red"],
     "props": ["prop1","prop2","prop3"]
 }
-
 const modern = {
     "name": "prehistoric",
     "depth": 100,
@@ -41,7 +40,7 @@ const postModern = {
     "palete": ["blue","orange","red"],
     "props": ["prop1","prop2","prop3"]
 }
-//^^^^^^^ All tempoary placeholders
+//^^^^^^^ All tempoary placeholders format not finalized
 
 const vertices = [];
 for (let x = 0; x <= widthSegments; x++) {
@@ -57,12 +56,63 @@ geometry.computeVertexNormals();
 const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, wireframe: true });
 const terrain = new THREE.Mesh(geometry, material);
 scene.add(terrain);
+
 //fix/edit old test code above ^^
 
 
-function scatterTerrianProps(propModels,period){// each model should = {"prop": wtv "biome":"wtv"}
-    //need to make various rules for generation + random
+function scatterTerrianProps(propModels, period) {
+    const scatterGroup = new THREE.Group();
+    if (!propModels || propModels.length === 0) return scatterGroup;
 
+    const totalPropsToSpawn = 10;
+    const dummy = new THREE.Object3D();
+
+    //calcs(short for caluclate for anyone whos new to the stream) the y level at a position
+    const getTerrainHeight = (x, z) => Math.sin(x * 0.5) * Math.cos(z * 0.5);
+
+    //makes sure props match biome
+    const availableProps = propModels.filter(p => period.props.includes(p.name));
+    if (availableProps.length === 0) return scatterGroup;
+
+    const countPerProp = Math.floor(totalPropsToSpawn / availableProps.length);
+
+    availableProps.forEach((propData) => {
+        const sourceMesh = propData.mesh || propData;
+
+        const instancedMesh = new THREE.InstancedMesh(
+            sourceMesh.geometry,
+            sourceMesh.material,
+            countPerProp
+        );
+        instancedMesh.castShadow = true;
+        instancedMesh.receiveShadow = true;
+
+        for (let i = 0; i < countPerProp; i++) {
+            //random grid spot
+            const x = Math.random() * widthSegments;
+            const z = Math.random() * heightSegments;
+            const y = getTerrainHeight(x, z);
+
+            //skip if not enough room
+            if (y < -0.8) continue;
+
+            //Random rotation
+            dummy.position.set(x, y, z);
+            dummy.rotation.y = Math.random() * Math.PI * 2;
+
+            const scale = 0.8 + Math.random() * 0.5;
+            dummy.scale.set(scale, scale, scale);
+
+            dummy.updateMatrix();
+            instancedMesh.setMatrixAt(i, dummy.matrix);
+        }
+
+        instancedMesh.instanceMatrix.needsUpdate = true;
+        scatterGroup.add(instancedMesh);
+    });
+
+    scene.add(scatterGroup);
+    return scatterGroup;
 }
 
 //ToDO: FIX THIS HORRID SPELLING!!!!
