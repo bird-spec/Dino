@@ -25,7 +25,6 @@ const iceAge = {
     "palete": ["blue","orange","red"],
     "props": ["prop1","prop2","prop3"]
 }
-
 const modern = {
     "name": "prehistoric",
     "depth": 100,
@@ -41,7 +40,7 @@ const postModern = {
     "palete": ["blue","orange","red"],
     "props": ["prop1","prop2","prop3"]
 }
-//^^^^^^^ All tempoary placeholders
+//^^^^^^^ All tempoary placeholders format not finalized
 
 const vertices = [];
 for (let x = 0; x <= widthSegments; x++) {
@@ -66,3 +65,4 @@ function scatterTerrianProps(propModels,period){// each model should = {"prop": 
 }
 
 //ToDO: FIX THIS HORRID SPELLING!!!!
+// leave me alone TwT
