@@ -408,9 +408,14 @@ export function createGameAPI({
 
             craft: (
                 id,
-                quantity,
-                options
-            )
+                quantity = 1,
+                options = {}
+            ) =>
+                crafting.craft(
+                    id,
+                    quantity,
+                    options
+                )
         },
 
         rocket: {
@@ -425,7 +430,7 @@ export function createGameAPI({
             installPart: (
                 partId
             ) =>
-                rocket.installPart(partId)
+                rocket.installPart(partId),
             launch: (
                 options = {}
             ) =>
