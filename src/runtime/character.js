@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { loadModel } from "../utils/model.js";
-import { getYaw } from "./camera.js";
+import { getYaw, getPitch } from "./camera.js";
 
 // function to spawn character.
 export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
@@ -91,6 +91,14 @@ export function turnDino(model, targetYaw, time) {
   if (d < -Math.PI) d += Math.PI * 2;
 
   model.rotation.y += d * (1 - Math.exp(-TURN_SPEED * dt));
+
+  const neckPivot = model.userData.neckPivot;
+
+  const pitch = getPitch() * 0.1;
+
+  const tilt = THREE.MathUtils.clamp(pitch, pitch - 0.3, pitch + 0.3);
+
+  neckPivot.rotation.x += (tilt - neckPivot.rotation.x) * 0.3;
 }
 
 export function runDino(model, time, speed, deg = 0) {
