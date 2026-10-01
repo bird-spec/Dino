@@ -379,9 +379,114 @@ export function createGameAPI({
                 dialogue.start(
                     id,
                     options
+                ),
+
+            current: ( choiceId) =>
+                dialogue.choose(choiceId),
+
+            end: (
+                reason
+            ) =>
+                dialogue.end(reason)
+        },
+
+        crafting: {
+            recipe: (id) =>
+                crafting.getRecipe(id),
+            recipes: () =>
+                crafting.listRecipes(),
+            canCraft: (
+                id,
+                quantity = 1,
+                options = {}
+            ) =>
+                crafting.canCraft(
+                    id,
+                    quantity,
+                    options
+                ),
+
+            craft: (
+                id,
+                quantity,
+                options
+            )
+        },
+
+        rocket: {
+            parts: () =>
+                rocket.getParts(),
+            progress: () =>
+                rocket.getProgress(),
+            hasAllParts: () =>
+                rocket.hasAllParts(),
+            canLaunch: () =>
+                rocket.canLaunch(),
+            installPart: (
+                partId
+            ) =>
+                rocket.installPart(partId)
+            launch: (
+                options = {}
+            ) =>
+                rocket.launch(options)
+        },
+
+        hyperspace: {
+            getState: () =>
+                hyperspace.getState(),
+            enter: (
+                options = {}
+            ) =>
+                hyperspace.enter(options),
+
+            setPhase: (
+                phase
+            ) =>
+                hyperspace.setPhase(phase),
+
+            onEnter: (
+                callback
+            ) =>
+                hyperspace.registerHook(
+                    'onEnter',
+                    callback
+                ),
+            onPhaseChanges:(
+                callback
+            ) =>
+                hyperspace.registerHook(
+                    'onPhaseChange',
+                    callback
+                ),
+            onExit: (
+                callback
+            ) =>
+                hyperspace.registerHook(
+                    'onExit',
+                    callback
                 )
+        },
+
+        constants: {
+            EVENTS,
+            ITEMS,
+            RESOURCE_TYPES,
+            QUESTS,
+            NPCS,
+            DIALOGUES,
+            RECIPES,
+            ROCKET_PARTS,
+            ERAS
         }
+    };
 
-
-    }
+    events.emit(
+        EVENTS.GAME_STARTED,
+        {
+            state:
+            state.getSnapshot()
+        }
+    );
+    return api
 }
