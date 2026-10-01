@@ -1,4 +1,17 @@
 {
+  "name": "Dino-4d-hyperspace-gameplay",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Gameplay and systems layer for Dino: $D Hyperspace.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+{
   "name": "4d-dino",
   "version": "0.0.0",
   "private": true,
