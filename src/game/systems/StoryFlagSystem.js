@@ -32,7 +32,7 @@ export class StoryFlagSystem {
             )
         );
     }
-    st(
+    set(
         key,
         value = true,
         {
@@ -51,7 +51,7 @@ export class StoryFlagSystem {
             },
 
             {
-                eevnetType:
+                eventType:
                 EVENTS.STORY_FLAG_CHANGED,
 
                 payload: {
@@ -76,7 +76,7 @@ export class StoryFlagSystem {
         );
     }
 
-    toggles(
+    toggle(
         key,
         options = {}
     ) {

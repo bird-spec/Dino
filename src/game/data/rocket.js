@@ -30,4 +30,4 @@ export const ROCKET_PARTS = deepFreeze({
         name: 'Hyperspace Core',
         itemId: 'hyperspace_core',
     }
-})
+});

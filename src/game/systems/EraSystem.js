@@ -23,7 +23,7 @@ export class EraSystem {
         const current = this.state.read(
             (state) => state.era.current,
         );
-        return deepClone(this.eraCatalog[current]);
+        return deepClone(this.getEra[current]);
     }
 
     getCurrentId() {
@@ -51,7 +51,7 @@ export class EraSystem {
             reason = 'gameplay'
         } = {}
     ) {
-        this._getEra(eraId);
+        this.getEra(eraId);
 
         for(
             const [key,expected]
@@ -96,7 +96,7 @@ export class EraSystem {
             reason = 'gameplay'
         } = {}
     ) {
-        this._getEra(eraId);
+        this.getEra(eraId);
 
         if(
             !this.isUnlocked(eraId)
@@ -142,6 +142,6 @@ export class EraSystem {
                 `Unknown Era: ${eraId}.`
             );
         }
-        return definition
+        return definition;
     }
 }

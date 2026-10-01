@@ -29,7 +29,7 @@ export class NpcSystem {
 
         assertNonEmptyString(npc.id, 'npc id');
 
-        this.npcCatalog = [npc.id] =
+        this.npcCatalog[npc.id] =
             deepClone(npc);
 
         return this.get(npc.id);
@@ -56,7 +56,7 @@ export class NpcSystem {
             !this.isDiscovered(npcId)
         ){
             this.state.mutate(
-                'npc,discover',
+                'npc.discover',
                 (state) => {
                     state.world
                         .discoveredNpcs[
