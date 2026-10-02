@@ -9,6 +9,7 @@ import {
 import { ThirdPov, updateThirdPov, getYaw } from "./runtime/camera.js";
 import { createSun, updateSun } from "./world/sun.js";
 import customizeCharacter from "./runtime/characterCustomize.js";
+import { buildTerrain } from "./world/blockTerrain.js";
 
 /*
 const scene = new THREE.Scene();
@@ -57,16 +58,16 @@ document.body.appendChild(renderer.domElement);
 
 const { sun } = createSun(scene);
 
-const model = await spawnCharacter("player1", 0, 5.2, 0, 1, scene);
+const model = await spawnCharacter("player1", 0, 50, 0, 1, scene);
 
 console.log(model);
 
 const geometry = new THREE.BoxGeometry(100, 0.1, 100);
 const material = new THREE.MeshStandardMaterial({ color: 0x3f9b0b });
 
-const cube = new THREE.Mesh(geometry, material);
-cube.receiveShadow = true;
-scene.add(cube);
+const ground = buildTerrain(30, 60, 10000, true);
+ground.receiveShadow = true;
+scene.add(ground);
 
 scene.background = new THREE.Color(0x87ceeb);
 
