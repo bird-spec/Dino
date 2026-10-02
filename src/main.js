@@ -62,10 +62,10 @@ const model = await spawnCharacter("player1", 0, 50, 0, 1, scene);
 
 console.log(model);
 
-const geometry = new THREE.BoxGeometry(100, 0.1, 100);
+const geometry = new THREE.BoxGeometry(100, 10, 100);
 const material = new THREE.MeshStandardMaterial({ color: 0x3f9b0b });
 
-const ground = buildTerrain(30, 60, 10000, true);
+const ground = buildTerrain(1000, 400, 10000, false);
 ground.receiveShadow = true;
 scene.add(ground);
 
