@@ -31,7 +31,7 @@ export class CraftingSystem {
                 `Unknown recipe: ${recipeId}`
             );
         }
-        return deepClone()
+        return deepClone(recipe)
         }
         listRecipes() {
         return deepClone(this.recipes);
@@ -225,7 +225,7 @@ export class CraftingSystem {
         if (
             !Number.isInteger(quantity
         ) ||
-        quantity < 0
+        quantity < 1
         ){
             throw new ValidationError(
                 'Craft quantity must be an integer'

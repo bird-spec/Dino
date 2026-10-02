@@ -91,7 +91,7 @@ export class WorldTimeSystem{
                 EVENTS.TIME_ADVANCED,
                 payload: {
                 seconds,
-                reasons,
+                reason,
                 absolute: true
             }
             }

@@ -10,7 +10,7 @@ import {
     deepClone
 } from "../core/utils.js";
 
-export class Interaction {
+export class InteractionSystem {
     constructor({
         state,
         eventBus,

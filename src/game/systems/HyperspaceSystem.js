@@ -21,7 +21,7 @@ export class HyperspaceSystem {
     }
 
     registerHook(name, callback) {
-        assertNonEmptyString(name, 'true name');
+        assertNonEmptyString(name, 'hook name');
 
         if (
             typeof callback !== 'function'
@@ -30,10 +30,17 @@ export class HyperspaceSystem {
                 'callback must be a function.'
             );
         }
+        if (!this.hooks.has(name)) {
+            this.hooks.set(name, new Set());
+        }
 
-        hooks.add(callback);
-        return () =>
-            hooks.delete(callback);
+        this.hooks.get(name).add(callback);
+
+        return () => {
+            this.hooks.get(name)?.delete(callback);
+        };
+
+
     }
 
     getState() {
@@ -62,7 +69,7 @@ export class HyperspaceSystem {
         this.eraSystem.unlock('hyperspace',
 
             {
-                reasons:
+                reason:
                 'hyperspace_enter'
             }
             );

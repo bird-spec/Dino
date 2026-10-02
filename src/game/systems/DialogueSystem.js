@@ -37,10 +37,10 @@ export class DialogueSystem {
                 dialogueId,
             );
         const resolvedNpcId =
-            npcId ?? dialogueId.npcId;
+            npcId ?? dialogue.npcId;
 
         if (resolvedNpcId) {
-            this.npcSystem = markDiscovered(resolvedNpcId);
+            this.npcSystem.markDiscovered(resolvedNpcId);
         }
 
         this.state.mutate(
@@ -55,7 +55,7 @@ export class DialogueSystem {
                 };
             },
             {
-                eventBus:
+                eventType:
                 EVENTS.DIALOGUE_STARTED,
 
                 payload: {
@@ -96,7 +96,7 @@ export class DialogueSystem {
     }
 
     choose(choiceId) {
-        const active = this.state.read((State) => state.dialogue.active);
+        const active = this.state.read((state) => state.dialogue.active);
         if (!active) {
             throw new ValidationError(
                 'No active dialogue'
@@ -107,7 +107,7 @@ export class DialogueSystem {
             active.dialogueId
         );
 
-        const node = dialogue.node[active.nodeId];
+        const node = dialogue.nodes[active.nodeId];
 
         const choice =
             (node.choices ?? [])
@@ -153,7 +153,11 @@ export class DialogueSystem {
         this.state.mutate(
             'dialogue.next',
             (state) => {
-                state.dialogue.active = nextNode;
+                state.dialogue.active = {
+                    dialogueId: active.dialogueId,
+                    nodeId: nextNode,
+                    npcId: active.npcId
+                };
             },
             {
                 eventType:
@@ -200,7 +204,7 @@ export class DialogueSystem {
     _applyEffects(effects) {
         for (
             const [key,value]
-            of Object.entries(effects.setFlags) ?? {}
+            of Object.entries(effects.setFlags ?? {})
         ) {
             this.storyFlags.set(
                 key,
