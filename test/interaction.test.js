@@ -43,7 +43,7 @@ test('one-time interaction cannot be used twice', () => {
         type: 'object',
         oneTime: true
     });
-    game.interactions.uses('one_time_test');
+    game.interactions.use('one_time_test');
     assert.throws(() => game.interactions.use('one_time_test'), /cannot be used/);
 });
 
@@ -60,7 +60,7 @@ test('interaction can require an item', ()=>{
         }
     });
 
-    assert.equal(game.interactions.uses('door_interaction').ok,false);
+    assert.equal(game.interactions.canUse('door_interaction').ok,false);
 
     game.inventory.add(
         'stone',
@@ -68,7 +68,7 @@ test('interaction can require an item', ()=>{
     );
 
     assert.equal(
-        game.interactions.uses('door_interaction').ok,true
+        game.interactions.canUse('door_interaction').ok,true
     );
 });
 
@@ -99,7 +99,7 @@ test('interaction can require completed quest', () => {
         id: 'special_interaction',
         type:'object',
         requires: {
-            completedQuests: ['gather_Stone']
+            completedQuests: ['gather_stone']
         }
     });
 
@@ -107,13 +107,9 @@ test('interaction can require completed quest', () => {
         game.interactions.canUse(
             'special_interaction').ok,false
         );
-
-    game.quests.start(
-        'gather_stone'
-    );
-    game.inventory.add(
-        game.interactions.canUse(
-            'special_interaction'
-        ).ok,true
-    );
+    game.quests.start('gather_stone');
+    game.inventory.add('stone',3);
+    assert.equal(
+        game.interactions.canUse('special_interaction').ok,true
+    )
 });

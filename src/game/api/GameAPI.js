@@ -48,7 +48,7 @@ export function createGameAPI({
     const inventory = new Inventory({
         state,
         eventBus: events,
-        items: ITEMS
+        itemCatalog: ITEMS
     });
 
     const resources = new ResourceSystem({
@@ -240,13 +240,13 @@ export function createGameAPI({
             get: (
                 id
             ) =>
-                quests.getActive(),
+                quests.getState(id),
             completed: () =>
                 quests.getCompleted(),
             isActive: (
                 id
             ) =>
-                quests.isCompleted(id),
+                quests.isActive(id),
             isCompleted: (
                 id
             ) =>
@@ -281,22 +281,33 @@ export function createGameAPI({
                 id
             ) => interactions.unregister(id),
             get: (
-                id,
-                context = {}
+                id
             ) =>
-                interactions.interact(id,context)
+                interactions.interact(id),
+            canUse: (id,context={}) =>
+                interactions.canInteract(id,context),
+
+            use:(id,context = {}) =>
+                interactions.interact(id,context),
+            uses: (id) =>
+                state.read(
+                    (gameState) => gameState.interactions[id]?.uses ?? 0
+                )
         },
 
         save: {
             save: (
                 slot = 'default'
             ) =>
-                save.load(slot),
+                save.save(slot),
 
             has: (
                 slot = 'default'
             ) =>
                 save.has(slot),
+            load: (
+                slot = 'default'
+            ) => save.load(slot),
             delete: (
                 slot = 'default'
             ) =>

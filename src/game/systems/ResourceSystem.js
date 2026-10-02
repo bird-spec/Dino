@@ -51,7 +51,7 @@ export class ResourceSystem {
             'resource.registerNode',
 
             (state) => {
-                state.resource.nodes[id] = {
+                state.resources.nodes[id] = {
                     id,
                     type,
                     quantity,
@@ -111,7 +111,7 @@ export class ResourceSystem {
 
         if (!node) {
             throw new NotFoundError(
-                `Unknown resource  node ${id}.`
+                `Unknown resource node ${id}.`
             );
         }
         return node;

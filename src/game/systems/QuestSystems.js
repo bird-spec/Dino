@@ -37,7 +37,7 @@ export class QuestSystems {
         const definition = this.questCatalog[questId];
         if (!definition) {
             throw new NotFoundError(
-                `unlike quests: ${questId}.`
+                `Unknown quest ${questId}.`
             );
         }
         return definition;
@@ -352,7 +352,7 @@ export class QuestSystems {
 
     _isComplete(questId) {
         const definition =
-            this.getDefiniton(questId);
+            this.getDefinition(questId);
 
         const active =
             this.getState(questId);

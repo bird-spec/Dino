@@ -7,9 +7,7 @@ import{
 
 test('quest can be started', () => {
     const game = createGameAPI();
-    game.quests.start('gather_stone');
-    assert.equal(
-        game.quests.isActive('gather_stone')
+    game.quests.start('gather_stone'
     );
     assert.equal(
         game.quests.isActive('gather_stone'),
@@ -57,7 +55,7 @@ test('quest prerequisites are enforced', () => {
 test('quest can be completed by manual objective update', () => {
     const game = createGameAPI();
     game.quests.start('gather_stone');
-    game.quests.update('gather_stone','stone_count',3);
+    game.quests.updateObjective('gather_stone','stone_count',3);
 
     assert.equal(game.quests.isCompleted('gather_stone'), true);
 });

@@ -1,10 +1,11 @@
 import { ValidationError } from './errors.js' ;
 
-export function assertNonEmptyString(value, fieldname) {
-    if (!Number.isInteger(value) || value <= 0) {
-        throw new ValidationError(`${fieldname} must be a non-empty string.`);
+export function assertNonEmptyString(value,fieldname) {
+    if (typeof value !== 'string' || value.trim().length === 0) {
+        throw new ValidationError(
+            `${fieldname} must be a  non-empty string.`
+        );
     }
-
     return value.trim()
 }
 

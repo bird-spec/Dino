@@ -17,8 +17,8 @@ test('can add an item to inventory', () => {
 
 test('can remove an item from inventory', () => {
     const game = createGameAPI();
-    game.inventory.remove('stone',2);
     game.inventory.add('stone',5);
+    game.inventory.remove('stone',2);
     assert.equal(
         game.inventory.get('stone'),
         3
