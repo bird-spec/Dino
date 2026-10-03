@@ -115,4 +115,4 @@ function scatterTerrianProps(propModels, period) {
     return scatterGroup;
 }
 
-//ToDO: FIX THIS HORRID SPELLING!!!!
+//nvm dont feel like it
