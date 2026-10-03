@@ -1,97 +1,55 @@
-import { EVENTS} from "../core/events.js";
-import {
-    assertNonEmptyString
-} from "../core/utils.js";
+import { EVENTS } from "../core/events.js";
+import { assertNonEmptyString } from "../core/utils.js";
 
 export class StoryFlagSystem {
-    constructor({
-        state,
-        eventBus
-                }) {
-        this.state = state;
-        this.eventBus = eventBus;
-    }
+  constructor({ state, eventBus }) {
+    this.state = state;
+    this.eventBus = eventBus;
+  }
 
-    get(
-        key,
-        defaultValue = false
-    ) {
-        assertNonEmptyString(
-            key, 'flag key'
-        );
+  get(key, defaultValue = false) {
+    assertNonEmptyString(key, "flag key");
 
-        return this.state.read(
-            (state) => state.storyFlags[key] ?? defaultValue
-        );
-    }
+    return this.state.read((state) => state.storyFlags[key] ?? defaultValue);
+  }
 
-    has(key) {
-        return Boolean(
-            this.get(
-                key,false
-            )
-        );
-    }
-    st(
-        key,
-        value = true,
-        {
-            source = 'gameplay'
-        } = {}
-    ) {
-        assertNonEmptyString(
-            key,
-            'flag key'
-        );
-        this.state.mutate(
-            'story.setFlag',
+  has(key) {
+    return Boolean(this.get(key, false));
+  }
+  set(key, value = true, { source = "gameplay" } = {}) {
+    assertNonEmptyString(key, "flag key");
+    this.state.mutate(
+      "story.setFlag",
 
-            (state) => {
-                state.storyFlags[key] = value;
-            },
+      (state) => {
+        state.storyFlags[key] = value;
+      },
 
-            {
-                eevnetType:
-                EVENTS.STORY_FLAG_CHANGED,
+      {
+                eventType: EVENTS.STORY_FLAG_CHANGED,
 
-                payload: {
-                    key,
-                    value,
-                    source,
-                }
-            }
-        );
+        payload: {
+          key,
+          value,
+          source,
+        },
+      },
+    );
 
-        return value;
-    }
+    return value;
+  }
 
-    clear(
-        key,
-        options = {}
-    ) {
-        return this.set(
-            key,
-            false,
-            options
-        );
-    }
+  clear(key, options = {}) {
+    return this.set(key, false, options);
+  }
 
-    toggles(
-        key,
-        options = {}
-    ) {
-        return this.set(
-            key,
-            !this.has(key),
-            options
-        );
-    }
+  toggles(key, options = {}) {
+    return this.set(key, !this.has(key), options);
+  }
 
-    all() {
-        return this.state.read (
-            (state) => ({
-                ...state.storyFlags,
-            })
-        )
-    }
+  all() {
+    return this.state.read((state) => ({
+      ...state.storyFlags,
+    }));
+  }
 }

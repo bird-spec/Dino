@@ -1,9 +1,15 @@
 import { hillHeight } from "./noise.js";
 import * as THREE from "three";
 
+export const TERRAIN_AMP = 30;
+export const TERRAIN_FREQ = 0.2;
+export const TERRAIN_BLOCK = 0.5;
+export let TERRAIN_SEED = 10000;
+
 export function buildTerrain(size, segments, seed, blocky) {
-  const amp = 12;
-  const freq = 0.2;
+  TERRAIN_SEED = seed;
+  const amp = TERRAIN_AMP;
+  const freq = TERRAIN_FREQ;
 
   if (!blocky) {
     const sheet = new THREE.PlaneGeometry(size, size, segments, segments);

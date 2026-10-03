@@ -1,6 +1,12 @@
 import * as THREE from "three";
 import { loadModel } from "../utils/model.js";
 import { hillHeight } from "../world/noise.js";
+import {
+  TERRAIN_AMP,
+  TERRAIN_FREQ,
+  TERRAIN_BLOCK,
+  TERRAIN_SEED,
+} from "../world/blockTerrain.js";
 import { getYaw, getPitch } from "./camera.js";
 
 // function to spawn character.
@@ -83,15 +89,13 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
 }
 
 const TURN_SPEED = 8;
-const TERRAIN_SEED = 10000;
-const TERRAIN_FREQ = 0.2;
-const TERRAIN_AMP = 12;
-const BLOCK = 0.5;
 
 export function getGroundY(x, z) {
   const h =
     hillHeight(x * TERRAIN_FREQ, z * TERRAIN_FREQ, TERRAIN_SEED) * TERRAIN_AMP;
-  return Math.floor(h / BLOCK) * BLOCK + BLOCK / 2;
+  return (
+    Math.floor(h / TERRAIN_BLOCK) * TERRAIN_BLOCK + TERRAIN_BLOCK / 2
+  );
 }
 
 export function turnDino(model, targetYaw, time) {
