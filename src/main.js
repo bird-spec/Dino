@@ -51,7 +51,7 @@ pointer.classList.add("pointer");
 document.body.append(pointer);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.outerWidth, window.outerHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
@@ -74,7 +74,10 @@ scene.background = new THREE.Color(0x87ceeb);
 renderer.setAnimationLoop(animate);
 
 const keys = {};
-addEventListener("keydown", (e) => (keys[e.key.toLowerCase()] = true));
+addEventListener("keydown", (e) => {
+  if (e.code === "Space") e.preventDefault();
+  keys[e.key.toLowerCase()] = true;
+});
 addEventListener("keyup", (e) => (keys[e.key.toLowerCase()] = false));
 
 addEventListener("keydown", (e) => {
@@ -96,6 +99,12 @@ model.rotation.y = THREE.MathUtils.degToRad(10);
 
 const camera = ThirdPov(scene, model);
 
+addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 let lastTime = 0;
 function animate(time) {
   const dt = Math.min(
@@ -112,7 +121,7 @@ function animate(time) {
     const sprint = !!keys["shift"];
     const speed = sprint ? 2 : 1;
 
-    let deg = (Math.atan2(s, f) * 100) / Math.PI;
+    let deg = (Math.atan2(s, f) * 180) / Math.PI;
     deg = (deg + 360) % 360;
     const len = Math.hypot(f, s);
     const norm = len > 1 ? 1 / len : 1;
@@ -123,7 +132,7 @@ function animate(time) {
   const spaceDown = !!keys[" "];
   const spacePressed = spaceDown && !keys._prevSpace;
   keys._prevSpace = spaceDown;
-  jumpDino(model, time, spacePressed, dt);
+  jumpDino(model, time, spacePressed, dt, moving);
 
   if (!moving) {
     turnDino(model, getYaw(), time);
