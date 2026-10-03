@@ -2,7 +2,7 @@ import { hillHeight } from "./noise.js";
 import * as THREE from "three";
 
 export function buildTerrain(size, segments, seed, blocky) {
-  const amp = 100;
+  const amp = 12;
   const freq = 0.2;
 
   if (!blocky) {
@@ -36,25 +36,41 @@ export function buildTerrain(size, segments, seed, blocky) {
 
     const holder = new THREE.InstancedMesh(cube, material, n * n);
     const dummy = new THREE.Object3D();
+    let used = 0;
 
-    for (let ix = 0; ix < n; ix++) {
-      for (let iz = 0; iz < n; iz++) {
-        const wx = -size / 2 + ix * blockSize + blockSize / 2;
-        const wz = -size / 2 + iz * blockSize + blockSize / 2;
+    for (let iz = 0; iz < n; iz++) {
+      const wz = -size / 2 + iz * blockSize + blockSize / 2;
+      let ix = 0;
 
-        const h = hillHeight(wx * freq, wz * freq, seed) * amp;
+      while (ix < n) {
+        const wxStart = -size / 2 + ix * blockSize + blockSize / 2;
+        const hStart = hillHeight(wxStart * freq, wz * freq, seed) * amp;
+        const sh = Math.floor(hStart / blockSize) * blockSize;
 
-        const sh = Math.floor(h / blockSize) * blockSize;
+        let runLen = 1;
+        while (ix + runLen < n) {
+          const wxNext = -size / 2 + (ix + runLen) * blockSize + blockSize / 2;
+          const hNext = hillHeight(wxNext * freq, wz * freq, seed) * amp;
+          const shNext = Math.floor(hNext / blockSize) * blockSize;
+          if (shNext !== sh) break;
+          runLen++;
+        }
 
-        dummy.position.set(wx, sh, wz);
-
+        const centerX = -size / 2 + ix * blockSize + (runLen * blockSize) / 2;
+        dummy.position.set(centerX, sh, wz);
+        dummy.scale.set(runLen, 1, 1);
         dummy.updateMatrix();
+        holder.setMatrixAt(used, dummy.matrix);
+        used++;
 
-        holder.setMatrixAt(ix * n + iz, dummy.matrix);
+        ix += runLen;
       }
     }
+
+    holder.count = used;
     holder.instanceMatrix.needsUpdate = true;
-    holder.castShadow = true;
+    holder.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+    holder.castShadow = false;
     holder.receiveShadow = true;
 
     return holder;

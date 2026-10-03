@@ -101,7 +101,7 @@ export function turnDino(model, targetYaw, time) {
   neckPivot.rotation.x += (tilt - neckPivot.rotation.x) * 0.3;
 }
 
-export function runDino(model, time, speed, deg = 0) {
+export function runDino(model, time, speed, deg = 0, dt = 1 / 60) {
   const t = (time / 1000) * 10 * speed;
   const stride = 0.35;
   const lift = 0.25;
@@ -123,21 +123,22 @@ export function runDino(model, time, speed, deg = 0) {
   model.rotation.z = rotateZ + Math.sin(t) * 0.01 * speed;
 }
 
-export function jumpDino(model, time, pressing) {
+const GRAVITY = 210;
+const JUMP_V0 = 28;
+export function jumpDino(model, time, pressed, dt = 1 / 60) {
   const ud = model.userData;
   if (ud.isFlying) {
-    ud.speed -= 0.6;
-    model.position.y += ud.speed / 5;
+    ud.vy -= GRAVITY * dt;
+    model.position.y += ud.vy * dt;
     if (model.position.y <= ud.baseY) {
       model.position.y = ud.baseY;
       ud.isFlying = false;
     }
     return;
   }
-  if (!pressing) return;
-  if (model.position.y > ud.baseY + 0.01) return;
+  if (!pressed) return;
   ud.isFlying = true;
-  ud.speed = 4.5;
+  ud.vy = JUMP_V0;
 }
 
 export default spawnCharacter;
