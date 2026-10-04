@@ -11,7 +11,7 @@ import { CraftingSystem } from "./systems/CraftingSystem.js";
 import { DialogueSystem } from "./systems/DialogueSystem.js";
 import { EraSystem } from "./systems/EraSystem.js";
 import { HyperspaceSystem } from "./systems/HyperspaceSystem.js";
-import { Interaction as InteractionSystem } from "./systems/InteractionSystem.js";
+import { InteractionSystem } from "./systems/InteractionSystem.js";
 import { RocketSystem } from "./systems/RocketSystem.js";
 import {
   SaveSystem,

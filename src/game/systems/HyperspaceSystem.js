@@ -1,154 +1,224 @@
-import { EVENTS } from "../core/events.js";
-import { ValidationError } from "../core/errors.js";
-import { assertNonEmptyString } from "../core/utils.js";
+import { EVENTS } from '../core/events.js';
+import { ValidationError} from "../core/errors.js";
+import {assertNonEmptyString} from "../core/utils.js";
 
-const VALID_PHASES = new Set(["idle", "charging", "arrival", "complete"]);
+const VALID_PHASES = new Set([
+    'idle',
+    'charging',
+    'arrival',
+    'complete',
+    ]);
 export class HyperspaceSystem {
-  constructor({ state, eventBus, eraSystem }) {
-    this.state = state;
-    this.eventBus = eventBus;
-    this.eraSystem = eraSystem;
-    this.hooks = new Map();
-  }
-
-  registerHook(name, callback) {
-    assertNonEmptyString(name, "true name");
-
-    if (typeof callback !== "function") {
-      throw new TypeError("callback must be a function.");
+    constructor({
+        state,
+        eventBus,
+        eraSystem
+                }) {
+        this.state = state;
+        this.eventBus = eventBus;
+        this.eraSystem = eraSystem;
+        this.hooks = new Map();
     }
 
-    if (!this.hooks.has(name)) this.hooks.set(name, new Set());
-    const set = this.hooks.get(name);
-    set.add(callback);
-    return () => set.delete(callback);
-  }
+    registerHook(name, callback) {
+        assertNonEmptyString(name, 'hook name');
 
-  getState() {
-    return this.state.read((state) => ({
-      ...state.hyperspace,
-    }));
-  }
+        if (
+            typeof callback !== 'function'
+        ) {
+            throw new TypeError(
+                'callback must be a function.'
+            );
+        }
+        if (!this.hooks.has(name)) {
+            this.hooks.set(name, new Set());
+        }
 
-  enter({ destination = "unknown", source = "gameplay" } = {}) {
-    assertNonEmptyString(destination, "destination");
+        this.hooks.get(name).add(callback);
 
-    if (this.getState().active) {
-      throw new ValidationError("Already in hyperspace.");
+        return () => {
+            this.hooks.get(name)?.delete(callback);
+        };
+
+
     }
 
-    this.eraSystem.unlock(
-      "hyperspace",
-
-      {
-        reason: "hyperspace_enter",
-      },
-    );
-
-    this.state.mutate(
-      "hyperspace.enter",
-
-      (state) => {
-        state.hyperspace.active = true;
-
-        state.hyperspace.phase = "charging";
-
-        state.hyperspace.destination = destination;
-
-        state.hyperspace.transitCount += 1;
-      },
-
-      {
-        eventType: EVENTS.HYPERSPACE_ENTERED,
-
-        payload: {
-          destination,
-          source,
-        },
-      },
-    );
-
-    this._runHooks("onEnter", {
-      destination,
-      source,
-    });
-
-    return this.getState();
-  }
-
-  setPhase(phase) {
-    assertNonEmptyString(phase, "phase");
-
-    if (!VALID_PHASES.has(phase)) {
-      throw new ValidationError(`Invalid hyperspace phase: ${phase}.`);
+    getState() {
+        return this.state.read(
+            (state) => ({
+                ...state.hyperspace
+            })
+        );
     }
 
-    const previous = this.getState().phase;
+    enter ({
+        destination = 'unknown',
+        source = 'gameplay'
+           } = {}
+           ) {
+        assertNonEmptyString(destination, 'destination');
 
-    this.state.mutate(
-      "hyperspace.phase",
-      (state) => {
-        state.hyperspace.phase = phase;
-      },
+        if (
+            this.getState().active
+        ) {
+            throw new ValidationError(
+                'Already in hyperspace.'
+            );
+        }
 
-      {
-        eventType: EVENTS.HYPERSPACE_PHASE_CHANGED,
-        payload: {
-          previous,
-          phase,
-        },
-      },
-    );
+        this.eraSystem.unlock('hyperspace',
 
-    this._runHooks("onPhaseChange", {
-      previous,
-      phase,
-    });
-    return this.getState();
-  }
+            {
+                reason:
+                'hyperspace_enter'
+            }
+            );
 
-  exit({ success = true, source = "gameplay" } = {}) {
-    if (!this.getState().active) {
-      return this.getState();
+        this.state.mutate(
+            'hyperspace.enter',
+
+            (state) => {
+                state.hyperspace.active =
+                    true;
+
+                state.hyperspace.phase =
+                    'charging';
+
+                state.hyperspace.destination = destination;
+
+                state.hyperspace.transitCount +=
+                    1;
+            },
+
+            {
+                eventType:
+                EVENTS.HYPERSPACE_ENTERED,
+
+                payload:{
+                    destination,
+                    source
+                }
+            }
+        );
+
+        this._runHooks(
+            'onEnter',
+            {
+                destination,
+                source
+            }
+        );
+
+        return this.getState();
     }
 
-    const previous = this.getState();
+    setPhase(phase) {
+        assertNonEmptyString(phase, 'phase');
 
-    this.state.mutate(
-      "hyperspace.exit",
+        if (
+            !VALID_PHASES.has(phase)
+        ) {
+            throw new ValidationError(
+                `Invalid hyperspace phase: ${phase}.`
+            );
+        }
 
-      (state) => {
-        state.hyperspace.active = false;
+        const previous =
+            this.getState().phase;
 
-        state.hyperspace.phase = success ? "complete" : "idle";
-      },
-      {
-        eventType: EVENTS.HYPERSPACE_EXITED,
-        payload: {
-          success,
-          source,
-          previous,
-        },
-      },
-    );
+        this.state.mutate(
+            'hyperspace.phase',
+            (state) => {
+                state.hyperspace.phase = phase;
+            },
 
-    this._runHooks("onExit", {
-      success,
-      source,
-      previous,
-    });
-    return this.getState();
-  }
-  _runHooks(name, payload) {
-    for (const callback of this.hooks.get(name) ?? []) {
-      try {
-        callback(payload);
-      } catch (error) {
-        this.eventBus.emit(EVENTS.ERROR, {
-          source: `hyperspace: ${name}`,
-          error,
-        });
-      }
+            {
+                eventType:
+                EVENTS.HYPERSPACE_PHASE_CHANGED,
+                payload:{
+                    previous,
+                    phase
+                }
+            }
+        );
+
+        this._runHooks(
+            'onPhaseChange',
+            {
+                previous,
+                phase
+            }
+        );
+        return this.getState();
     }
-  }
+
+    exit({
+        success = true,
+        source = 'gameplay'
+         } = {}
+         ) {
+        if (
+            !this.getState().active
+        ){
+            return this.getState();
+        }
+
+        const previous =
+            this.getState();
+
+        this.state.mutate(
+            'hyperspace.exit',
+
+            (state) => {
+                state.hyperspace.active = false;
+
+                state.hyperspace.phase =
+                    success
+                        ?'complete'
+                        : 'idle';
+            },
+            {
+                eventType:
+                     EVENTS.HYPERSPACE_EXITED,
+                payload:{
+                    success,
+                    source,
+                    previous
+                }
+            }
+        );
+
+        this._runHooks(
+            'onExit',
+            {
+                success,
+                source,
+                previous
+            }
+        );
+        return this.getState();
+    }
+    _runHooks(
+        name,
+        payload
+    ) {
+        for (
+            const callback
+            of this.hooks.get(name) ??
+                    []
+        ) {
+            try{
+                callback(payload);
+            } catch (error) {
+                this.eventBus.emit(
+                    EVENTS.ERROR,
+                    {
+                        source:
+                        `hyperspace: ${name}`,
+                        error
+                    }
+                );
+            }
+        }
+    }
 }

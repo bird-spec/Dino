@@ -1,55 +1,82 @@
-import { NotFoundError, ValidationError } from "../core/errors.js";
-import { deepClone, assertNonEmptyString } from "../core/utils.js";
+import {
+    NotFoundError,
+    ValidationError,
+} from "../core/errors.js";
+import {
+    deepClone,
+    assertNonEmptyString
+} from "../core/utils.js";
 
 export class NpcSystem {
-  constructor({ state, npcCatalog }) {
-    this.state = state;
-    this.npcCatalog = {
-      ...npcCatalog,
-    };
-  }
-
-  register(npc) {
-    if (!npc || typeof npc !== "object") {
-      throw new ValidationError("NPC must be an object.");
+    constructor ({
+                     state,
+                     npcCatalog
+                 }) {
+        this.state = state;
+        this.npcCatalog = {
+            ...npcCatalog
+        };
     }
 
-    assertNonEmptyString(npc.id, "npc id");
+    register(npc) {
+        if (
+            !npc || typeof npc !== 'object'
+        ) {
+            throw new ValidationError(
+                'NPC must be an object.'
+            );
+        }
 
-    this.npcCatalog[npc.id] = deepClone(npc);
+        assertNonEmptyString(npc.id, 'npc id');
 
-    return this.get(npc.id);
-  }
+        this.npcCatalog[npc.id] =
+            deepClone(npc);
 
-  get(npcId) {
-    const npc = this.npcCatalog[npcId];
-    if (!npc) {
-      throw new NotFoundError(`Unknown NPC: ${npcId}`);
+        return this.get(npc.id);
     }
 
-    return deepClone(npc);
-  }
+    get(npcId) {
+        const npc = this.npcCatalog[npcId];
+        if (!npc) {
+            throw new NotFoundError(`Unknown NPC: ${npcId}`);
+        }
 
-  list() {
-    return deepClone(this.npcCatalog);
-  }
-  markDiscovered(npcId) {
-    this.get(npcId);
-
-    if (!this.isDiscovered(npcId)) {
-      this.state.mutate("npc,discover", (state) => {
-        state.world.discoveredNpcs[npcId] = true;
-      });
+        return deepClone(npc);
     }
 
-    return true;
-  }
+    list() {
+        return deepClone(
+            this.npcCatalog,
+        ) ;
+    }
+    markDiscovered(npcId) {
+        this.get(npcId);
 
-  isDiscovered(npcId) {
-    this.get(npcId);
+        if (
+            !this.isDiscovered(npcId)
+        ){
+            this.state.mutate(
+                'npc.discover',
+                (state) => {
+                    state.world
+                        .discoveredNpcs[
+                            npcId
+                        ] = true;
+                }
+            );
+        }
 
-    return this.state.read((state) =>
-      Boolean(state.world.discoveredNpcs[npcId]),
-    );
-  }
+        return true;
+    }
+
+    isDiscovered(npcId) {
+        this.get(npcId);
+
+        return this.state.read(
+            (state) =>
+                Boolean (
+                    state.world.discoveredNpcs[npcId]
+                )
+        );
+    }
 }

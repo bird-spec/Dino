@@ -5,7 +5,7 @@ export const RESOURCE_TYPES = deepFreeze({
         id: 'stone_rock',
         name: 'Stone Rock',
         yieldItemId: 'stone',
-        defaultYieldPerHarvest: 2
+        defaultYieldPerHarvest: 1
     },
     water_source: {
         id: 'water_source',
