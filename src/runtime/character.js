@@ -1,5 +1,12 @@
 import * as THREE from "three";
 import { loadModel } from "../utils/model.js";
+import { hillHeight } from "../world/noise.js";
+import {
+  TERRAIN_AMP,
+  TERRAIN_FREQ,
+  TERRAIN_BLOCK,
+  TERRAIN_SEED,
+} from "../world/blockTerrain.js";
 import { getYaw, getPitch } from "./camera.js";
 
 // function to spawn character.
@@ -61,6 +68,7 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   pivot.attach(eyeR);
 
   model.userData.baseY = y;
+  model.userData.vy = 0;
   model.userData.legL = legL;
   model.userData.legR = legR;
   model.userData.speed = 10;
@@ -72,11 +80,23 @@ export async function spawnCharacter(name, x, y, z, scale = 1, scene) {
   model.userData.body = body;
   model.userData.neckPivot = pivot;
 
+  model.updateMatrixWorld(true);
+  const fullBox = new THREE.Box3().setFromObject(model);
+  model.userData.footOffset = model.position.y - fullBox.min.y;
+
   scene.add(model);
   return model;
 }
 
 const TURN_SPEED = 8;
+
+export function getGroundY(x, z) {
+  const h =
+    hillHeight(x * TERRAIN_FREQ, z * TERRAIN_FREQ, TERRAIN_SEED) * TERRAIN_AMP;
+  return (
+    Math.floor(h / TERRAIN_BLOCK) * TERRAIN_BLOCK + TERRAIN_BLOCK / 2
+  );
+}
 
 export function turnDino(model, targetYaw, time) {
   const last = model.userData.lastTurnTime;
@@ -101,12 +121,12 @@ export function turnDino(model, targetYaw, time) {
   neckPivot.rotation.x += (tilt - neckPivot.rotation.x) * 0.3;
 }
 
-export function runDino(model, time, speed, deg = 0) {
+export function runDino(model, time, speed, deg = 0, dt = 1 / 60) {
   const t = (time / 1000) * 10 * speed;
   const stride = 0.35;
   const lift = 0.25;
 
-  const { legL, legR, legL_home, legR_home, baseY, rotateZ } = model.userData;
+  const { legL, legR, legL_home, legR_home, rotateZ, footOffset = 0 } = model.userData;
 
   turnDino(model, getYaw() + THREE.MathUtils.degToRad(deg), time);
 
@@ -116,28 +136,47 @@ export function runDino(model, time, speed, deg = 0) {
   legR.position.z = legR_home.z - Math.sin(t + Math.PI) * stride;
   legR.position.y = legR_home.y + Math.max(0, Math.cos(t + Math.PI)) * lift;
 
+  const groundY =
+    getGroundY(model.position.x, model.position.z) + footOffset;
+
   if (!model.userData.isFlying) {
-    model.position.y = baseY + Math.abs(Math.sin(t)) * 0.08 * speed;
+    model.position.y = groundY + Math.abs(Math.sin(t)) * 0.08 * speed;
   }
 
   model.rotation.z = rotateZ + Math.sin(t) * 0.01 * speed;
 }
 
-export function jumpDino(model, time, pressing) {
+const GRAVITY = 210;
+const JUMP_V0 = 88;
+export function jumpDino(model, time, pressed, dt = 1 / 60, moving = false) {
   const ud = model.userData;
-  if (ud.isFlying) {
-    ud.speed -= 0.6;
-    model.position.y += ud.speed / 5;
-    if (model.position.y <= ud.baseY) {
-      model.position.y = ud.baseY;
-      ud.isFlying = false;
+  if (pressed) ud.jumpBuffer = 0.15;
+  else ud.jumpBuffer = Math.max(0, (ud.jumpBuffer ?? 0) - dt);
+  const groundY =
+    getGroundY(model.position.x, model.position.z) + (ud.footOffset ?? 0);
+
+  if (!ud.isFlying) {
+    if ((ud.jumpBuffer ?? 0) > 0) {
+      ud.isFlying = true;
+      ud.vy = JUMP_V0;
+      ud.jumpBuffer = 0;
+      return;
     }
+    if (model.position.y > groundY + 0.05) {
+      ud.isFlying = true;
+      ud.vy = 0;
+      return;
+    }
+    if (!moving) model.position.y = groundY;
     return;
   }
-  if (!pressing) return;
-  if (model.position.y > ud.baseY + 0.01) return;
-  ud.isFlying = true;
-  ud.speed = 4.5;
+  ud.vy -= GRAVITY * dt;
+  model.position.y += ud.vy * dt;
+  if (ud.vy <= 0 && model.position.y <= groundY) {
+    model.position.y = groundY;
+    ud.isFlying = false;
+    ud.vy = 0;
+  }
 }
 
 export default spawnCharacter;

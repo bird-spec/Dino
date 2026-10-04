@@ -23,7 +23,7 @@ export class EraSystem {
         const current = this.state.read(
             (state) => state.era.current,
         );
-        return deepClone(this.getEra[current]);
+        return deepClone(this.eraCatalog[current]);
     }
 
     getCurrentId() {
