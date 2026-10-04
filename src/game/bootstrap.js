@@ -26,6 +26,7 @@ import { DIALOGUES } from "./data/dialogues.js";
 import { RESOURCE_TYPES } from "./data/resources.js";
 import { RECIPES } from "./data/recipes.js";
 import { ROCKET_PARTS } from "./data/rocket.js";
+import { EVENTS } from "./core/events.js";
 
 export function bootstrapGame() {
   const eventBus = new EventBus();
@@ -117,6 +118,39 @@ export function bootstrapGame() {
     save,
     ui,
   };
+
+  const syncQuestHud = () => {
+    if (!ui) return;
+    const active = quests.getActive();
+    const ids = Object.keys(active);
+    if (ids.length === 0) return;
+    const questId = ids[0];
+    const definition = quests.getDefinition(questId);
+    const progress = active[questId].objectives ?? {};
+    ui.setQuest(
+      definition.title ?? questId,
+      definition.objectives.map((objective) => ({
+        text: `${objective.title ?? objective.id} (${Math.min(progress[objective.id] ?? 0, objective.target)} / ${objective.target})`,
+        completed: (progress[objective.id] ?? 0) >= objective.target,
+      })),
+    );
+  };
+
+  for (const eventName of [
+    EVENTS.QUEST_STARTED,
+    EVENTS.QUEST_PROGRESS,
+    EVENTS.QUEST_COMPLETED,
+    EVENTS.QUEST_FAILED,
+  ]) {
+    eventBus.on(eventName, (payload) => {
+      syncQuestHud();
+      if (eventName === EVENTS.QUEST_COMPLETED) {
+        ui?.notify?.(`Quest Complete: ${payload?.questId ?? ""}`, "success");
+      }
+    });
+  }
+
+  syncQuestHud();
 
   if (typeof window !== "undefined") window.__game = game;
   return game;

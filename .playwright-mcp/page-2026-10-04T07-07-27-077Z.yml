@@ -1,0 +1,12 @@
+- generic [ref=f1e5]:
+  - text: PROJECT 4D / TEMPORAL SURVIVAL
+  - 'heading "DINO: 4D HYPERSPACE" [level=1] [ref=f1e6]'
+  - paragraph [ref=f1e7]: A Prehistoric world. One collapsing timeline. One dinosaur with a way through time.
+  - generic [ref=f1e8]:
+    - button "START GAME" [ref=f1e9] [cursor=pointer]
+    - button "HOW TO PLAY" [ref=f1e10] [cursor=pointer]
+  - generic [ref=f1e11]:
+    - generic [ref=f1e12]: WASD / ARROWS - MOVE
+    - generic [ref=f1e13]: SHIFT - RUN
+    - generic [ref=f1e14]: E - INTERACT
+    - generic [ref=f1e15]: ESC - PAUSE
