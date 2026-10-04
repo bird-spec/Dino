@@ -10,39 +10,13 @@ import { ThirdPov, updateThirdPov, getYaw } from "./runtime/camera.js";
 import { createSun, updateSun } from "./world/sun.js";
 import customizeCharacter from "./runtime/characterCustomize.js";
 import { buildTerrain } from "./world/blockTerrain.js";
-
-/*
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000,
-); // Cav is this first or 3rd person?
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setAnimationLoop(animate);
-document.body.appendChild(renderer.domElement);
-
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x2c51e3 });
-
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-camera.position.z = 5;
-
-function animate(time) {
-  cube.rotation.x = time / 2000;
-  cube.rotation.y = time / 1000;
-
-  renderer.render(scene, camera);
-}
- */
+import { bootstrapGame } from "./game/bootstrap.js";
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
+
+const game = bootstrapGame();
+console.log("[game] systems ready: ".Object.keys(game).join(", "));
 
 const pointer = document.createElement("div");
 

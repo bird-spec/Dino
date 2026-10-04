@@ -1,16 +1,16 @@
 import { EventBus } from "./core/EventBus.js";
 import { GameState } from "./core/GameState.js";
 import { ITEMS } from "./core/items.js";
-import { StoryFlagSystem } from "./systems/";
-import { WorldTimeSystem } from "./systems/";
+import { StoryFlagSystem } from "./systems/StoryFlagSystem.js";
+import { WorldTimeSystem } from "./systems/WorldTimeSystem.js";
 import { Inventory } from "./systems/Inventory.js";
 import { NpcSystem } from "./systems/NpcSystem.js";
-import { QuestSystem } from "./systems/ResourceSystem.js";
-import { ResourceSystem } from "./systems/QuestSystems.js";
+import { QuestSystems } from "./systems/QuestSystems.js";
+import { ResourceSystem } from "./systems/ResourceSystem.js";
 import { CraftingSystem } from "./systems/CraftingSystem.js";
 import { DialogueSystem } from "./systems/DialogueSystem.js";
 import { EraSystem } from "./systems/EraSystem.js";
-import { HyperspaceSystem } from "./systems/";
+import { HyperspaceSystem } from "./systems/HyperspaceSystem.js";
 import { Interaction as InteractionSystem } from "./systems/InteractionSystem.js";
 import { RocketSystem } from "./systems/RocketSystem.js";
 import {
@@ -35,8 +35,7 @@ export function bootstrapGame() {
   const inventory = new Inventory({
     state,
     eventBus,
-    inventory,
-    questCatalog: QUESTS,
+    itemCatalog: ITEMS,
   });
   const npcSystem = new NpcSystem({ state, npcCatalog: NPCS });
   const quests = new QuestSystems({
@@ -70,7 +69,7 @@ export function bootstrapGame() {
     npcSystem,
   });
   const eras = new EraSystem({ state, eventBus, eraCatalog: ERAS, storyFlags });
-  const hyperspace = new HyperSpaceSystem({ state, eventBus, eraSystem: eras });
+  const hyperspace = new HyperspaceSystem({ state, eventBus, eraSystem: eras });
   const interaction = new InteractionSystem({ state, eventBus, inventory });
   const rocket = new RocketSystem({
     state,
@@ -89,4 +88,36 @@ export function bootstrapGame() {
     storage = new MemoryStorageAdapter();
   }
   const save = new SaveSystem({ state, eventBus, storage });
+
+  // STEP1: UIManager is inert until StoryIntro.js constructor is fixed.
+  let ui = null;
+  try {
+    ui = new UIManager();
+  } catch (e) {
+    console.warn("[bootstrap] UI unavailable (Step 1 pending):", e);
+  }
+
+  quests.start("gather_stone");
+
+  const game = {
+    eventBus,
+    state,
+    storyFlags,
+    time,
+    inventory,
+    npcSystem,
+    quests,
+    resources,
+    crafting,
+    dialogue,
+    eras,
+    hyperspace,
+    interaction,
+    rocket,
+    save,
+    ui,
+  };
+
+  if (typeof window !== "undefined") window.__game = game;
+  return game;
 }
