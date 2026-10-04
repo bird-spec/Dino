@@ -1,3 +1,5 @@
+import { cameraSettings } from "./camera.js";
+
 export const settings = {
   viewDistance: Number(localStorage.getItem("dino4d:viewDistance") ?? 200),
 };
@@ -43,6 +45,25 @@ export function openSettingsPanel(scene) {
   show();
   panel.appendChild(label);
   panel.appendChild(slider);
+  const sLabel = document.createElement("div");
+  const sSlider = document.createElement("input");
+  sSlider.type = "range";
+  sSlider.min = "0.0005";
+  sSlider.max = "0.006";
+  sSlider.step = "0.0005";
+  sSlider.value = String(cameraSettings.sensitivity);
+  sSlider.style.width = "100%";
+  const sShow = () => {
+    sLabel.textContent = `Mouse sensitivity: ${sSlider.value}`;
+  };
+  sSlider.addEventListener("input", () => {
+    cameraSettings.sensitivity = Number(sSlider.value);
+    localStorage.setItem("dino4d:sensitivity", sSlider.value);
+    sShow();
+  });
+  sShow();
+  panel.appendChild(sLabel);
+  panel.appendChild(sSlider);
   document.body.appendChild(panel);
   return true;
 }
