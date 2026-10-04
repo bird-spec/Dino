@@ -16,6 +16,9 @@ import {
   STONE_NODE_ID,
   STONE_INTERACT_ID,
 } from "./game/nodes.js";
+import { ChunkManager } from "./world/chunks.js";
+import { settings, openSettingsPanel } from "./runtime/settings.js";
+import { ScatterManager } from "./game/nodes.js";
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
@@ -40,6 +43,10 @@ const { sun } = createSun(scene);
 const model = await spawnCharacter("player1", 0, 50, 0, 1, scene);
 game.model = model;
 
+const scatter = new ScatterManager(scene, game);
+game.scatter = scatter;
+let nearTarget = null;
+
 const stoneMesh = await spawnStoneNode(scene, game);
 game.stoneMesh = stoneMesh;
 
@@ -48,9 +55,13 @@ console.log(model);
 const geometry = new THREE.BoxGeometry(100, 10, 100);
 const material = new THREE.MeshStandardMaterial({ color: 0x3f9b0b });
 
-const ground = buildTerrain(1000, 400, 10000, true);
-ground.receiveShadow = true;
-scene.add(ground);
+const chunkManager = new ChunkManager(scene);
+chunkManager.update(0, 0, settings.viewDistance);
+scene.fog = new THREE.Fog(
+  0x87ceeb,
+  settings.viewDistance * 0.5,
+  settings.viewDistance,
+);
 
 scene.background = new THREE.Color(0x87ceeb);
 
@@ -66,12 +77,18 @@ addEventListener("keyup", (e) => (keys[e.key.toLowerCase()] = false));
 let nearStone = false;
 addEventListener("keydown", (e) => {
   if (e.repeat) return;
-  if (e.key.toLowerCase() !== "e" || !nearStone) return;
+  if (e.key.toLowerCase() !== "e" || !nearTarget) return;
   try {
-    game.interaction.interact(STONE_INTERACT_ID);
-    game.ui?.notify("+1 stone", "success");
-    if (game.resources.getNode(STONE_NODE_ID).quantity <= 0) {
-      stoneMesh.visible = false;
+    game.interaction.interact(nearTarget.interactId);
+    const left = game.resources.getNode(nearTarget.nodeId).quantity;
+    const got = nearTarget.prompt.replace("Harvest ", "");
+    game.ui?.notify(
+      left > 0 ? `+1 ${got}` : `${got} depleted`,
+      left > 0 ? "success" : "info",
+    );
+    if (left <= 0) {
+      scatter.vanish(nearTarget);
+      nearTarget = null;
       game.ui?.hideInteraction();
     }
   } catch {
@@ -91,6 +108,12 @@ addEventListener("keydown", (e) => {
     if (document.exitPointerLock) document.exitPointerLock();
     document.body.appendChild(customizeCharacter());
   }
+  if (e.key.toLowerCase() === "o") {
+    const old = document.getElementById("customization-panel");
+    if (old) old.remove();
+    if (document.exitPointerLock) document.exitPointerLock();
+    openSettingsPanel(scene);
+  }
 });
 
 model.rotation.x = 0;
@@ -105,6 +128,7 @@ addEventListener("resize", () => {
 });
 
 let lastTime = 0;
+let chunkTimer = 0;
 function animate(time) {
   const dt = Math.min(
     0.05,
@@ -137,12 +161,19 @@ function animate(time) {
     turnDino(model, getYaw(), time);
   }
 
-  const stoneDx = model.position.x - stoneMesh.position.x;
-  const stoneDz = model.position.z - stoneMesh.position.z;
-  nearStone =
-    stoneMesh.visible && Math.hypot(stoneDx, stoneDz) < 3.5;
-  if (nearStone) game.ui?.showInteraction("Harvest stone", "E");
+  nearTarget = scatter.nearest(model.position.x, model.position.z, 3.5);
+  if (nearTarget) game.ui?.showInteraction(nearTarget.prompt, "E");
   else game.ui?.hideInteraction();
+
+  chunkTimer += dt;
+  if (chunkTimer > 0.5) {
+    chunkTimer = 0;
+    chunkManager.update(
+      model.position.x,
+      model.position.z,
+      settings.viewDistance,
+    );
+  }
 
   updateSun(sun, model);
   updateThirdPov(camera, model);
