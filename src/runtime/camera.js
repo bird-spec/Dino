@@ -9,6 +9,10 @@ const HEIGHT = 3.5;
 const BACK = 9;
 const AHEAD = 10;
 
+export const cameraSettings = {
+  sensitivity: Number(localStorage.getItem("dino4d:sensitivity") ?? 0.002),
+};
+
 export function getYaw() {
   return yaw;
 }
@@ -42,20 +46,23 @@ export function ThirdPov(scene, model) {
     0.1,
     1000,
   );
-  const sensitivity = 0.002;
 
   yaw = model.rotation.y;
 
   if (!listening) {
     listening = true;
+
     document.addEventListener("click", (e) => {
-      document.body.requestPointerLock();
+      try {
+        const p = document.body.requestPointerLock();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } catch {}
     });
 
     document.addEventListener("mousemove", (e) => {
       if (document.pointerLockElement === document.body) {
-        yaw -= e.movementX * sensitivity;
-        pitch -= e.movementY * sensitivity;
+        yaw -= e.movementX * cameraSettings.sensitivity;
+        pitch -= e.movementY * cameraSettings.sensitivity;
         pitch = Math.max(-1, Math.min(2, pitch));
       }
     });

@@ -1,291 +1,60 @@
-# Dino: 4D Hyperspace
+# Dino: 4D hyperspace
 
-A 3D open-world web game based on the classic browser dinosaur game, expanded into a time-travel adventure.
+A voxel open-world game in the browser. You're Dino, living in prehistory, and an asteroid is coming for your whole timeline. Run, gather, learn rockets, build one, and stop the rock.
 
-## Overview
+## The story
 
-Dino lives in the prehistoric era and discovers that a massive asteroid is going to destroy his world.
+Dino lives with the other dinosaurs. Then a warning comes through. Something big is going to hit his era and wipe it out.
 
-Using a mysterious technology called 4D Hyperspace, Dino travels into the modern era. After encountering humans and eventually meeting a scientist, he learns about asteroids, space, and modern technology.
+He finds 4D hyperspace, where time works like a direction you can walk in. That takes him to the modern era, where humans (fairly) lose it over a live dinosaur. A scientist figures out where he came from and teaches him how rockets and asteroids work.
 
-Dino returns to his own time with the knowledge he needs to build a rocket and stop the asteroid before it destroys his timeline.
+Surviving in the present isn't enough though. He goes home, gathers everything himself, builds the rocket in prehistory, launches it, and breaks the asteroid before it breaks him.
 
-The goal is to combine exploration, time travel, progression, and a story-driven adventure into a browser-based 3D game.
+Prehistory, hyperspace, modern era, scientist, back home, rocket, launch, asteroid, saved timeline. That's the whole game, start to finish.
 
-## Gameplay
+## How to run it
 
-The game will feature:
-
-* 3D exploration
-* Player-controlled dinosaur
-* Open-world environments
-* Multiple time periods
-* Time travel through 4D Hyperspace
-* NPCs and dialogue
-* Resource gathering
-* Quest progression
-* Rocket construction
-* Space exploration
-* An asteroid-based final mission
-
-## Time Travel
-
-Time is treated as the fourth dimension.
-
-The player moves normally through a 3D environment while being able to change the time period they are currently in.
-
-For example:
-
-```text
-Prehistoric Era
-      |
-      v
-4D Hyperspace
-      |
-      v
-Modern Era
-      |
-      v
-4D Hyperspace
-      |
-      v
-Prehistoric Era
+```sh
+npm install
+npx vite
 ```
 
-The same location can change depending on the time period. This allows us to reuse parts of the world while still making each era feel different.
+Open the address it prints, usually `http://localhost:5173`. Click the game once so it grabs your mouse.
 
-## World
+## Controls
 
-### Prehistoric Era
+WASD moves, mouse looks. Shift sprints, space jumps. Walk up to something and press E to grab it or talk. R changes your colors, O opens settings, Esc pauses. Jump over a cactus and you'll hear why.
 
-The main starting area will contain:
+## What's in the game
 
-* Forests
-* Mountains
-* Caves
-* Rivers
-* Dinosaur habitats
-* Resource areas
-* Dino's home
-* The eventual rocket launch area
+A world that never ends. Terrain builds itself in chunks as you walk, with a view-distance slider if your machine struggles. Rocks, ferns, resin trees, pines, cactuses, and grass are scattered everywhere from a fixed seed, so the map looks the same every run. Harvested rocks stay harvested.
 
-### Modern Era
+Two eras to walk between through the hyperspace portal, each with its own look and people. Full quest chain from your first stone to the launch pad. Crafting at the workbench, a five-part rocket you assemble yourself, and a launch sequence. The asteroid finale plays out in space, and the ending changes prehistory for good.
 
-The modern section will include:
+Quests, inventory, dialogue, crafting, rocket parts, era switching, and saves all run underneath. Progress saves to your browser automatically.
 
-* A city
-* Buildings
-* Roads
-* NPCs
-* A research facility
-* The scientist
-* Technology that Dino can learn from
-
-### Space
-
-The final section will include:
-
-* Rocket launch
-* Earth's atmosphere
-* Space
-* The asteroid
-* The final mission
-
-## Team
-
-### Creative Director and Frontend Lead
-
-**You**
-
-Responsibilities:
-
-* Story
-* Game design
-* Frontend development
-* UI/UX
-* Visual design
-* Player experience
-* Feature planning
-* Git/GitHub management
-* Integrating different systems
-
-### World and Gameplay Systems
-
-**Developer 2**
-
-Responsibilities:
-
-* 3D environment
-* Terrain
-* World generation
-* Collisions
-* Obstacles
-* Environmental interactions
-
-### Time and Physics Systems
-
-**Developer 3**
-
-Responsibilities:
-
-* 4D Hyperspace
-* Time travel
-* Timeline states
-* Time-dependent world changes
-* Meteor and asteroid systems
-* Gameplay physics
-
-### Backend and Game Systems
-
-**Developer 4**
-
-Responsibilities:
-
-* Game state
-* Progression
-* Quest data
-* NPC data
-* Save/load systems
-* Supporting APIs and utilities
-
-## Technology
-
-The project is being developed as a web application rather than using a traditional game engine.
-
-Current technologies:
-
-* HTML
-* CSS
-* JavaScript
-* Three.js
-* WebGL
-* Git
-* GitHub
-
-The technology stack may change as development progresses.
-
-## Project Structure
+## Project layout
 
 ```text
-dino-4d-hyperspace/
-│
-├── src/
-│   ├── frontend/
-│   ├── world/
-│   ├── hyperspace/
-│   ├── systems/
-│   ├── player/
-│   ├── ui/
-│   └── assets/
-│
-├── public/
-│
-├── docs/
-│
-├── README.md
-├── package.json
-└── .gitignore
+src/
+  main.js            game loop, input, spawning
+  runtime/           dino, camera, settings, customization
+  world/             chunked voxel terrain, noise, sun, sky
+  game/              bootstrap, scatter, npcs
+  game/core          state, events, items
+  game/systems       quests, dialogue, crafting, rocket, save...
+  game/data          eras, quests, recipes, npcs, dialogue text
+  frontend/          HUD, menus, dialogue box
+  utils/             models, dust, pathfinding
+public/models/       all 29 low-poly models
 ```
 
-## Development Roadmap
+## Tech
 
-### Phase 1: Basic Prototype
+Vite, Three.js, plain JavaScript, no engine. State is one object with an event bus in front of it. Saves go to localStorage. Tests run with `npm test`.
 
-* [ ] Set up project
-* [ ] Set up GitHub repository
-* [ ] Create 3D scene
-* [ ] Add camera
-* [ ] Add lighting
-* [ ] Add Dino
-* [ ] Implement movement
-* [ ] Implement jumping
-* [ ] Implement basic collision
+## Screenshots
 
-### Phase 2: Prehistoric World
-
-* [ ] Create terrain
-* [ ] Add forests
-* [ ] Add mountains
-* [ ] Add water
-* [ ] Add environmental objects
-* [ ] Add dinosaurs
-* [ ] Add basic exploration
-
-### Phase 3: Modern Era
-
-* [ ] Create modern environment
-* [ ] Add humans
-* [ ] Add NPC reactions
-* [ ] Add scientist
-* [ ] Add dialogue
-* [ ] Add story progression
-
-### Phase 4: 4D Hyperspace
-
-* [ ] Create Hyperspace system
-* [ ] Create time-travel mechanic
-* [ ] Create timeline states
-* [ ] Connect prehistoric and modern eras
-* [ ] Add time-dependent world changes
-
-### Phase 5: Rocket
-
-* [ ] Add resource gathering
-* [ ] Add rocket components
-* [ ] Add construction system
-* [ ] Add launch sequence
-* [ ] Create space environment
-
-### Phase 6: Final Mission
-
-* [ ] Add asteroid
-* [ ] Add space gameplay
-* [ ] Create final mission
-* [ ] Allow player to alter the asteroid's trajectory
-* [ ] Complete the timeline
-
-### Phase 7: Polish
-
-* [ ] Animations
-* [ ] Sound effects
-* [ ] Music
-* [ ] UI improvements
-* [ ] Environment improvements
-* [ ] Performance optimization
-* [ ] Bug fixing
-
-## First Milestone
-
-The first goal is intentionally small:
-
-> A playable dinosaur that can move around a basic 3D prehistoric environment.
-
-Once that works, additional systems will be added one at a time.
-
-## Git Workflow
-
-`main` should always contain a stable version of the game.
-
-Each developer should work on their own branch:
-
-```text
-main
-├── frontend/your-name
-├── world/developer-2
-├── hyperspace/developer-3
-└── systems/developer-4
-```
-
-### Guidelines
-
-1. Do not directly break the main branch.
-2. Test changes before pushing them.
-3. Use clear commit messages.
-4. Pull the latest changes before starting major work.
-5. Communicate before modifying another developer's system.
-6. Keep systems separated and reusable.
-7. Use pull requests when merging larger features.
-
-## Goal
-
-The project starts with the simple idea of the browser dinosaur game and expands it into a 3D open-world adventure involving exploration, time travel, technology, and a mission to prevent the extinction of Dino's world.
+![Menu](docs/shots/menu.png)
+![World](docs/shots/world.png)
+![Harvest](docs/shots/harvest.png)

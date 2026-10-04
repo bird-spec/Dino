@@ -15,6 +15,7 @@ import { ChunkManager } from "./world/chunks.js";
 import { settings, openSettingsPanel } from "./runtime/settings.js";
 import { ScatterManager } from "./game/nodes.js";
 import { spawnNpc, animateNpc } from "./game/npcs.js";
+import { DustPuffs } from "./utils/dust.js";
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
@@ -41,7 +42,14 @@ game.model = model;
 
 const scatter = new ScatterManager(scene, game);
 game.scatter = scatter;
-const elara = await spawnNpc(scene, { path: "/models/elara.glb", x: 12, z: 6, scale: 2, name: "elara" });
+const dust = new DustPuffs(scene);
+const elara = await spawnNpc(scene, {
+  path: "/models/elara.glb",
+  x: 12,
+  z: 6,
+  scale: 2,
+  name: "elara",
+});
 let nearTarget = null;
 let beepCtx = null;
 let beepedThisJump = false;
@@ -75,7 +83,9 @@ scene.fog = new THREE.Fog(
 
 scene.background = new THREE.Color(0x87ceeb);
 
+let lastTime = 0;
 renderer.setAnimationLoop(animate);
+document.getElementById("boot-loader")?.remove();
 
 const keys = {};
 addEventListener("keydown", (e) => {
@@ -136,7 +146,6 @@ addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-let lastTime = 0;
 let chunkTimer = 0;
 function animate(time) {
   const dt = Math.min(
@@ -144,6 +153,11 @@ function animate(time) {
     Math.max(0.0001, (time - lastTime) / 1000 || 1 / 60),
   );
   lastTime = time;
+
+  if (game.ui?.paused) {
+    renderer.render(scene, camera);
+    return;
+  }
 
   const f = (keys["w"] ? 1 : 0) - (keys["s"] ? 1 : 0);
   const s = (keys["a"] ? 1 : 0) - (keys["d"] ? 1 : 0);
@@ -186,9 +200,24 @@ function animate(time) {
     turnDino(model, getYaw(), time);
   }
 
+  if (model.position.y < -20) {
+    model.position.set(0, 60, 0);
+    model.userData.vy = 0;
+    model.userData.isFlying = true;
+    game.ui?.notify("TIMELINE RESTORED", "info");
+  }
+
   nearTarget = scatter.nearest(model.position.x, model.position.z, 3.5);
   if (nearTarget) game.ui?.showInteraction(nearTarget.prompt, "E");
   else game.ui?.hideInteraction();
+
+  dust.tick(dt, {
+    moving,
+    grounded: !model.userData.isFlying,
+    x: model.position.x,
+    y: model.position.y - (model.userData.footOffset ?? 1),
+    z: model.position.z,
+  });
 
   chunkTimer += dt;
   if (chunkTimer > 0.5) {
