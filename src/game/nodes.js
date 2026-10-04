@@ -61,7 +61,12 @@ async function getTemplate(path) {
     const gltf = await new GLTFLoader().loadAsync(path);
     const tpl = gltf.scene;
     tpl.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(tpl);
+    let box = new THREE.Box3().setFromObject(tpl);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    tpl.rotation.x = center.z >= 0 ? -Math.PI / 2 : Math.PI / 2;
+    tpl.updateMatrixWorld(true);
+    box = new THREE.Box3().setFromObject(tpl);
     templateCache.set(path, tpl);
     templateOffset.set(path, -box.min.y);
   }
@@ -69,14 +74,56 @@ async function getTemplate(path) {
 }
 
 const SCATTER = [
-  { path: "/models/stone_rock.glb", harvest: "stone_rock", count: [2, 4] },
-  { path: "/models/fern_patch.glb", harvest: "fern_patch", count: [1, 3] },
-  { path: "/models/resin_tree.glb", harvest: "resin_tree", count: [0, 1] },
-  { path: "/models/prehistoric_tree.glb", harvest: null, count: [2, 4] },
-  { path: "/models/cactus.glb", harvest: null, count: [1, 3] },
-  { path: "/models/rock.glb", harvest: null, count: [1, 2] },
-  { path: "/models/bush.glb", harvest: null, count: [2, 4] },
-  { path: "/models/grass_tuft.glb", harvest: null, count: [4, 8] },
+  {
+    path: "/models/stone_rock.glb",
+    harvest: "stone_rock",
+    count: [1, 2],
+    scale: [0.7, 1.4],
+  },
+  {
+    path: "/models/fern_patch.glb",
+    harvest: "fern_patch",
+    count: [0, 1],
+    scale: [0.8, 1.5],
+  },
+  {
+    path: "/models/resin_tree.glb",
+    harvest: "resin_tree",
+    count: [0, 1],
+    scale: [1.2, 1.6],
+  },
+  {
+    path: "/models/prehistoric_tree.glb",
+    harvest: null,
+    count: [1, 2],
+    scale: [1.5, 2.0],
+    stretchY: [1.0, 2.0],
+  },
+  {
+    path: "/models/cactus.glb",
+    harvest: null,
+    count: [0, 1],
+    chance: 0.2,
+    scale: [3.6, 4.4],
+  },
+  {
+    path: "/models/rock.glb",
+    harvest: null,
+    count: [0, 1],
+    scale: [0.7, 1.4],
+  },
+  {
+    path: "/models/bush.glb",
+    harvest: null,
+    count: [1, 2],
+    scale: [0.8, 1.3],
+  },
+  {
+    path: "/models/grass_tuft.glb",
+    harvest: null,
+    count: [2, 3],
+    scale: [0.8, 1.4],
+  },
 ];
 
 export const SCATTER_RADIUS = 96;
@@ -134,16 +181,30 @@ export class ScatterManager {
             placed.every((p) => Math.hypot(p.x - x, p.z - z) > 3);
         }
         if (!ok) continue;
+        if (entry.chance !== undefined && rng() > entry.chance) continue;
         placed.push({ x, z });
         const tpl = await getTemplate(entry.path);
         const mesh = tpl.clone();
+        const s = entry.scale
+          ? entry.scale[0] + rng() * (entry.scale[1] - entry.scale[0])
+          : 1;
+        const sy = entry.stretchY
+          ? entry.stretchY[0] + rng() * (entry.stretchY[1] - entry.stretchY[0])
+          : s;
+        mesh.scale.set(s, sy, s);
         mesh.position.set(x, 0, z);
         mesh.position.y +=
-          getGroundY(x, z) + (templateOffset.get(entry.path) ?? 0);
+          getGroundY(x, z) + (templateOffset.get(entry.path) ?? 0) * sy;
         mesh.traverse((o) => {
           if (o.isMesh) o.castShadow = true;
         });
-        const item = { mesh, interactId: null, prompt: "", nodeId: null };
+        const item = {
+          mesh,
+          interactId: null,
+          prompt: "",
+          nodeId: null,
+          isCactus: entry.path.includes("cactus"),
+        };
         if (entry.harvest) {
           const idx = placed.length;
           const nodeId = `node_${cx}_${cz}_${idx}`;
@@ -174,10 +235,10 @@ export class ScatterManager {
           item.nodeId = nodeId;
           item.interactId = interactId;
           item.prompt = `Harvest ${entry.harvest.replace("_", " ")}`;
-          this.scene.add(mesh);
-          items.push(item);
-          this.live.push(item);
         }
+        this.scene.add(mesh);
+        items.push(item);
+        this.live.push(item);
       }
     }
   }

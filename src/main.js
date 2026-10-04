@@ -11,14 +11,10 @@ import { createSun, updateSun } from "./world/sun.js";
 import customizeCharacter from "./runtime/characterCustomize.js";
 import { buildTerrain } from "./world/blockTerrain.js";
 import { bootstrapGame } from "./game/bootstrap.js";
-import {
-  spawnStoneNode,
-  STONE_NODE_ID,
-  STONE_INTERACT_ID,
-} from "./game/nodes.js";
 import { ChunkManager } from "./world/chunks.js";
 import { settings, openSettingsPanel } from "./runtime/settings.js";
 import { ScatterManager } from "./game/nodes.js";
+import { spawnNpc, animateNpc } from "./game/npcs.js";
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
@@ -45,10 +41,24 @@ game.model = model;
 
 const scatter = new ScatterManager(scene, game);
 game.scatter = scatter;
+const elara = await spawnNpc(scene, { path: "/models/elara.glb", x: 12, z: 6, scale: 2, name: "elara" });
 let nearTarget = null;
-
-const stoneMesh = await spawnStoneNode(scene, game);
-game.stoneMesh = stoneMesh;
+let beepCtx = null;
+let beepedThisJump = false;
+function beep() {
+  beepCtx ??= new (window.AudioContext || window.webkitAudioContext)();
+  if (beepCtx.state === "suspended") void beepCtx.resume();
+  const o = beepCtx.createOscillator();
+  const g = beepCtx.createGain();
+  o.type = "square";
+  o.frequency.value = 880;
+  g.gain.setValueAtTime(0.15, beepCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, beepCtx.currentTime + 0.09);
+  o.connect(g);
+  g.connect(beepCtx.destination);
+  o.start();
+  o.stop(beepCtx.currentTime + 0.1);
+}
 
 console.log(model);
 
@@ -74,7 +84,6 @@ addEventListener("keydown", (e) => {
 });
 addEventListener("keyup", (e) => (keys[e.key.toLowerCase()] = false));
 
-let nearStone = false;
 addEventListener("keydown", (e) => {
   if (e.repeat) return;
   if (e.key.toLowerCase() !== "e" || !nearTarget) return;
@@ -148,7 +157,7 @@ function animate(time) {
     deg = (deg + 360) % 360;
     const len = Math.hypot(f, s);
     const norm = len > 1 ? 1 / len : 1;
-    model.translateZ(-6 * speed * norm * dt);
+    model.translateZ(-9 * speed * norm * dt);
     runDino(model, time, speed, deg, dt);
   }
 
@@ -156,6 +165,22 @@ function animate(time) {
   const spacePressed = spaceDown && !keys._prevSpace;
   keys._prevSpace = spaceDown;
   jumpDino(model, time, spacePressed, dt, moving);
+
+  if (!model.userData.isFlying) beepedThisJump = false;
+  else if (!beepedThisJump) {
+    for (const it of scatter.live) {
+      if (!it.isCactus || !it.mesh.visible) continue;
+      const cd = Math.hypot(
+        it.mesh.position.x - model.position.x,
+        it.mesh.position.z - model.position.z,
+      );
+      if (cd < 1.6) {
+        beep();
+        beepedThisJump = true;
+        break;
+      }
+    }
+  }
 
   if (!moving) {
     turnDino(model, getYaw(), time);
@@ -173,8 +198,10 @@ function animate(time) {
       model.position.z,
       settings.viewDistance,
     );
+    scatter.update(model.position.x, model.position.z);
   }
 
+  animateNpc(elara, model, time);
   updateSun(sun, model);
   updateThirdPov(camera, model);
   renderer.render(scene, camera);

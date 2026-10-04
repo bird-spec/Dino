@@ -27,33 +27,32 @@ export function buildChunk(cx, cz) {
 
   for (let iz = 0; iz < n; iz++) {
     const wz = z0 + iz * TERRAIN_BLOCK + TERRAIN_BLOCK / 2;
-  }
-
-  let ix = 0;
-  while (ix < n) {
-    const wxStart = x0 + ix * TERRAIN_BLOCK + TERRAIN_BLOCK / 2;
-    const hStart =
-      hillHeight(wxStart * TERRAIN_FREQ, wz * TERRAIN_FREQ, seed) * TERRAIN_AMP;
-    const sh = Math.floor(hStart / TERRAIN_BLOCK) * TERRAIN_BLOCK;
-    let runLen = 1;
-    while (ix + runLen < n) {
-      const wxNext = x0 + (ix + runLen) * TERRAIN_BLOCK + TERRAIN_BLOCK / 2;
-      const hNext =
-        hillHeight(wxNext * TERRAIN_FREQ, wz * TERRAIN_FREQ, seed) *
-        TERRAIN_AMP;
-      if (Math.floor(hNext / TERRAIN_BLOCK) * TERRAIN_BLOCK !== sh) break;
-      runLen++;
+    let ix = 0;
+    while (ix < n) {
+      const wxStart = x0 + ix * TERRAIN_BLOCK + TERRAIN_BLOCK / 2;
+      const hStart =
+        hillHeight(wxStart * TERRAIN_FREQ, wz * TERRAIN_FREQ, seed) * TERRAIN_AMP;
+      const sh = Math.floor(hStart / TERRAIN_BLOCK) * TERRAIN_BLOCK;
+      let runLen = 1;
+      while (ix + runLen < n) {
+        const wxNext = x0 + (ix + runLen) * TERRAIN_BLOCK + TERRAIN_BLOCK / 2;
+        const hNext =
+          hillHeight(wxNext * TERRAIN_FREQ, wz * TERRAIN_FREQ, seed) *
+          TERRAIN_AMP;
+        if (Math.floor(hNext / TERRAIN_BLOCK) * TERRAIN_BLOCK !== sh) break;
+        runLen++;
+      }
+      dummy.position.set(
+        x0 + ix * TERRAIN_BLOCK + (runLen * TERRAIN_BLOCK) / 2,
+        sh,
+        wz,
+      );
+      dummy.scale.set(runLen, 1, 1);
+      dummy.updateMatrix();
+      holder.setMatrixAt(used, dummy.matrix);
+      used++;
+      ix += runLen;
     }
-    dummy.position.set(
-      x0 + ix * TERRAIN_BLOCK + (runLen * TERRAIN_BLOCK) / 2,
-      sh,
-      wz,
-    );
-    dummy.scale.set(runLen, 1, 1);
-    dummy.updateMatrix();
-    holder.setMatrixAt(used, dummy.matrix);
-    used++;
-    ix += runLen;
   }
   holder.count = used;
   holder.instanceMatrix.needsUpdate = true;

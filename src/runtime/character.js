@@ -162,7 +162,7 @@ export function jumpDino(model, time, pressed, dt = 1 / 60, moving = false) {
       ud.jumpBuffer = 0;
       return;
     }
-    if (model.position.y > groundY + 0.05) {
+    if (model.position.y > groundY + 0.25) {
       ud.isFlying = true;
       ud.vy = 0;
       return;
