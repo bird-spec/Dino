@@ -11,12 +11,17 @@ import { createSun, updateSun } from "./world/sun.js";
 import customizeCharacter from "./runtime/characterCustomize.js";
 import { buildTerrain } from "./world/blockTerrain.js";
 import { bootstrapGame } from "./game/bootstrap.js";
+import {
+  spawnStoneNode,
+  STONE_NODE_ID,
+  STONE_INTERACT_ID,
+} from "./game/nodes.js";
 
 const scene = new THREE.Scene();
 const loader = new GLTFLoader();
 
 const game = bootstrapGame();
-console.log("[game] systems ready: ".Object.keys(game).join(", "));
+console.log("[game] systems ready: " + Object.keys(game).join(", "));
 
 const pointer = document.createElement("div");
 
@@ -27,12 +32,16 @@ document.body.append(pointer);
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const { sun } = createSun(scene);
 
 const model = await spawnCharacter("player1", 0, 50, 0, 1, scene);
+game.model = model;
+
+const stoneMesh = await spawnStoneNode(scene, game);
+game.stoneMesh = stoneMesh;
 
 console.log(model);
 
@@ -53,6 +62,22 @@ addEventListener("keydown", (e) => {
   keys[e.key.toLowerCase()] = true;
 });
 addEventListener("keyup", (e) => (keys[e.key.toLowerCase()] = false));
+
+let nearStone = false;
+addEventListener("keydown", (e) => {
+  if (e.repeat) return;
+  if (e.key.toLowerCase() !== "e" || !nearStone) return;
+  try {
+    game.interaction.interact(STONE_INTERACT_ID);
+    game.ui?.notify("+1 stone", "success");
+    if (game.resources.getNode(STONE_NODE_ID).quantity <= 0) {
+      stoneMesh.visible = false;
+      game.ui?.hideInteraction();
+    }
+  } catch {
+    game.ui?.notify("Nothing left to harvest", "info");
+  }
+});
 
 addEventListener("keydown", (e) => {
   if (e.key === "r") {
@@ -111,6 +136,13 @@ function animate(time) {
   if (!moving) {
     turnDino(model, getYaw(), time);
   }
+
+  const stoneDx = model.position.x - stoneMesh.position.x;
+  const stoneDz = model.position.z - stoneMesh.position.z;
+  nearStone =
+    stoneMesh.visible && Math.hypot(stoneDx, stoneDz) < 3.5;
+  if (nearStone) game.ui?.showInteraction("Harvest stone", "E");
+  else game.ui?.hideInteraction();
 
   updateSun(sun, model);
   updateThirdPov(camera, model);

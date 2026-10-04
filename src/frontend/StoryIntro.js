@@ -4,7 +4,7 @@ const clamp = (value, min, max) =>
     Math.min(max, Math.max(min, value));
 
 export class UIManager {
-    construction(options = {}) {
+    constructor(options = {}) {
         this.title = options.title ?? "DINO: 4D HYPERSPACE";
 
         this.started = false;
@@ -34,12 +34,12 @@ export class UIManager {
         this.setStamina(100, 100);
         this.setTimelineStability(100);
 
-        this.questObjectives(
+        this.setQuest("The Beginning", [
             "Explore the prehistoric world",
             "Follow the story to discover what threatens the timeline",
-        );
+        ]);
 
-        this.setQuest("The beginning", []);
+        void this.fadeTo(0, 1200);
     }
 
     //root
@@ -149,7 +149,7 @@ export class UIManager {
         </div>
 
         <div class="control-row">
-        <spanLook / Camera</span>
+        <span>Look / Camera</span>
         <strong>MOUSE</strong>
         </div>
 
@@ -248,7 +248,7 @@ export class UIManager {
         </div>
 
         <div 
-        class="tmeline-note"
+        class="timeline-note"
         id="timeline-note"
         >
         Stable
@@ -460,7 +460,7 @@ export class UIManager {
 
         <section
         class="pause-menu hidden"
-        id=pause-menu"
+        id="pause-menu"
         >
 
         <div class="pause-card">
@@ -523,14 +523,14 @@ export class UIManager {
         this.mainMenu = q("#main-menu");
         this.menuTitle = q("#menu-title");
         this.startButton = q("#start-button");
-        this.controlButton = q("#controls-button");
+        this.controlsButton = q("#controls-button");
 
         //controls
         this.controlsModal = q("#controls-modal");
         this.controlsClose = q("#controls-close");
 
         //pause
-        this.pauseConrolButton = q("#puse-controls-button");
+        this.pauseControlsButton = q("#pause-controls-button");
 
         this.resumeButton = q("#resume-button");
 
@@ -563,9 +563,9 @@ export class UIManager {
 
         this.questCard = q("#quest-card");
 
-        this.questTitle = q("#qust-title");
+        this.questTitle = q("#quest-title");
 
-        this.questObjective = q("#quest-objective");
+        this.questObjectivesEl = q("#quest-objectives");
 
         this.interactionPrompt = q("#interaction-prompt");
 
@@ -573,7 +573,7 @@ export class UIManager {
 
         this.interactionText = q("#interaction-text");
 
-        this.notificationStack = q("#notifcation-stack");
+        this.notificationStack = q("#notification-stack");
 
         this.dialogueWrap = q("#dialogue-wrap");
 
@@ -678,7 +678,7 @@ export class UIManager {
             "game:setObjective",
             (event) => {
 
-                this.questObjective(
+                this.setObjective(
                     event.detail?.title ??
                     "No objective",
 
@@ -856,7 +856,7 @@ export class UIManager {
             const cleanEra =
                 String(era)
                     .replaceAll("_", " ")
-                    .toUppercase();
+                    .toUpperCase();
 
             this .eraValue.textContent =
                 cleanEra;
@@ -884,7 +884,7 @@ export class UIManager {
                     .padStart(3, "0");
 
             this.coordinates.textContent =
-            `X ${format(x)} · Y ${formath(y)} · Z ${format(z)}`;
+            `X ${format(x)} · Y ${format(y)} · Z ${format(z)}`;
         }
 
         //health
@@ -953,7 +953,7 @@ export class UIManager {
             `${Math.round(
                 safeCurrent,
             )} / ${Math.round(
-                dafeMax,
+                safeMax,
             )}`;
 
             this.staminaFill.style.width =
@@ -962,7 +962,7 @@ export class UIManager {
 
         //time line StaBIliTy
 
-        setTimelineStability(vaue) {
+        setTimelineStability(value) {
 
             const percentage =
             clamp(
@@ -1035,11 +1035,18 @@ export class UIManager {
             name;
 
             this.questObjectives =
-            Array.isArray(
-                objectives,
-            )
-            ? objectives
-            : [];
+            (
+                Array.isArray(
+                    objectives,
+                )
+                ? objectives
+                : []
+            ).map(
+                (objective) =>
+                    typeof objective === "string"
+                    ? { text: objective, completed: false }
+                    : objective,
+            );
 
             this.questTitle.textContent =
             name;
@@ -1053,7 +1060,7 @@ export class UIManager {
                     "hidden",
                 );
 
-                this.questObjectives.innerHTML =
+                this.questObjectivesEl.innerHTML =
                 "";
 
                 return;
@@ -1089,7 +1096,7 @@ export class UIManager {
 
         renderQuestObjectives() {
 
-            this.questObjectives.innerHTML =
+            this.questObjectivesEl.innerHTML =
             this.questObjectives
             .map(
               (
@@ -1170,11 +1177,12 @@ export class UIManager {
         ) {
 
             const item =
-            document.createElement
+            document.createElement(
                 "div",
+            );
 
             item.className =
-            `notification $(type)`;
+            `notification ${type}`;
 
             item.innerHTML = `
             <div class="notification-line"></div>
@@ -1230,7 +1238,7 @@ export class UIManager {
             duration = 500,
         ) {
 
-            this.fade.style.transitionDuation =
+            this.fade.style.transitionDuration =
             `${duration}ms`;
 
             this.fade.style.opacity =
@@ -1384,9 +1392,9 @@ export class UIManager {
 
             this.dialogueProgress.textContent =
             `${this.dialogueIndex + 1} / ${
-                this.dialogueLines.Lines.length}`;
+                this.dialogueLines.length}`;
 
-            this.dialoguesText.textContent =
+            this.dialogueText.textContent =
             "";
 
 
@@ -1478,7 +1486,7 @@ export class UIManager {
 
 
                 // second press advances
-                this.dialoguesIndex += 1;
+                this.dialogueIndex += 1;
 
                 
                 if (
@@ -1510,7 +1518,7 @@ export class UIManager {
                 const resolve =
                 this.dialogueResolve;
 
-                this.dialogueResilve =
+                this.dialogueResolve =
                 null;
 
 
@@ -1533,7 +1541,7 @@ export class UIManager {
                         "UNKNOWN SIGNAL",
 
                         text:
-                        "Tempporal warning detected",
+                        "Temporal warning detected",
                     },
 
                     {
@@ -1598,6 +1606,13 @@ export class UIManager {
             //helpers
 
             showElement(element) {
+
+                element?.classList.remove(
+                    "hidden",
+                );
+            }
+
+            hideElement(element) {
 
                 element?.classList.add(
                     "hidden",
