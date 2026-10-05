@@ -18,9 +18,7 @@
 }
 
 
-/* =========================================================
-   ROOT
-========================================================= */
+/*root*/
 
 #game-ui {
   position: fixed;
@@ -45,9 +43,7 @@
 }
 
 
-/*
-   Some UI pieces need mouse input.
-*/
+/*some UI pieces need input*/
 
 #game-ui button,
 #game-ui .controls-modal,
@@ -62,18 +58,14 @@
 }
 
 
-/* =========================================================
-   GENERAL
-========================================================= */
+/*general*/
 
 .hidden {
   display: none !important;
 }
 
 
-/* =========================================================
-   SCREEN FADE
-========================================================= */
+/*screen fade*/
 
 .ui-screen-fade {
   position: fixed;
@@ -92,9 +84,7 @@
 }
 
 
-/* =========================================================
-   MAIN MENU
-========================================================= */
+/*main menu*/
 
 .main-menu {
   position: fixed;
@@ -246,9 +236,7 @@
 }
 
 
-/* =========================================================
-   MENU BUTTONS
-========================================================= */
+/*menu buttons*/
 
 .menu-actions {
 
@@ -362,9 +350,7 @@
 }
 
 
-/* =========================================================
-   MENU FOOTER
-========================================================= */
+/*menu footer*/
 
 .menu-footer {
 
@@ -400,9 +386,7 @@
 }
 
 
-/* =========================================================
-   MODALS
-========================================================= */
+/*modals*/
 
 .controls-modal,
 .pause-menu {
@@ -529,9 +513,7 @@
 }
 
 
-/* =========================================================
-   CONTROL LIST
-========================================================= */
+/*control list*/
 
 .controls-grid {
 
@@ -592,9 +574,7 @@
 }
 
 
-/* =========================================================
-   HUD
-========================================================= */
+/*HUD*/
 
 .hud {
 
@@ -686,9 +666,7 @@
 }
 
 
-/* =========================================================
-   ERA INDICATOR
-========================================================= */
+/*era indicator*/
 
 .live-dot {
 
@@ -747,9 +725,7 @@
 }
 
 
-/* =========================================================
-   METERS
-========================================================= */
+/*meters*/
 
 .meter {
 
@@ -811,9 +787,7 @@
 }
 
 
-/* =========================================================
-   VITALS
-========================================================= */
+/*vitals*/
 
 .vitals-card {
 
@@ -872,9 +846,7 @@
 }
 
 
-/* =========================================================
-   OBJECTIVE
-========================================================= */
+/*objective*/
 
 .objective-card {
 
@@ -932,9 +904,7 @@
 }
 
 
-/* =========================================================
-   QUEST
-========================================================= */
+/*quest*/
 
 .quest-card {
 
@@ -1055,9 +1025,7 @@
 }
 
 
-/* =========================================================
-   INTERACTION
-========================================================= */
+/*interaction*/
 
 .interaction-prompt {
 
@@ -1153,9 +1121,7 @@
 }
 
 
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
+/*notifications*/
 
 .notification-stack {
 
@@ -1296,9 +1262,7 @@
 }
 
 
-/* =========================================================
-   DIALOGUE
-========================================================= */
+/*dialogue*/
 
 .dialogue-wrap {
 
@@ -1419,9 +1383,7 @@
 }
 
 
-/* =========================================================
-   PAUSE
-========================================================= */
+/*pause*/
 
 .pause-card {
 
@@ -1459,9 +1421,7 @@
 }
 
 
-/* =========================================================
-   TOAST
-========================================================= */
+/*toast*/
 
 .toast-layer {
 
@@ -1527,9 +1487,7 @@
 }
 
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+/*responsive*/
 
 @media (max-width: 850px) {
 
@@ -1670,5 +1628,636 @@
 
     bottom:
       10px;
+  }
+}
+/*story stage system*/
+
+#story-stage-overlay {
+  position: fixed;
+
+  top: 20px;
+  left: 50%;
+
+  z-index: 700;
+
+  width: min(
+    620px,
+    calc(100% - 40px)
+  );
+
+  transform:
+    translate(-50%, -18px);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
+}
+
+#story-stage-overlay.active {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+#story-stage-overlay.completed
+  .story-stage-card {
+  border-color:
+    rgba(
+      117,
+      214,
+      155,
+      0.45
+    );
+}
+
+.story-stage-card {
+  padding:
+    14px 17px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.13
+    );
+
+  border-radius:
+    10px;
+
+  background:
+    rgba(
+      6,
+      8,
+      10,
+      0.9
+    );
+
+  backdrop-filter:
+    blur(10px);
+
+  box-shadow:
+    0 18px 50px
+    rgba(
+      0,
+      0,
+      0,
+      0.22
+    );
+}
+
+.story-stage-top {
+  display:
+    flex;
+
+  justify-content:
+    space-between;
+
+  align-items:
+    flex-start;
+
+  gap:
+    18px;
+}
+
+.story-stage-kicker {
+  color:
+    #6c7880;
+
+  font-size:
+    8px;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.18em;
+}
+
+.story-stage-title {
+  margin-top:
+    6px;
+
+  color:
+    #ecf1f3;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.2;
+
+  font-weight:
+    800;
+}
+
+.story-stage-counter {
+  color:
+    #67737b;
+
+  font-size:
+    9px;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.1em;
+}
+
+.story-stage-description {
+  margin-top:
+    9px;
+
+  color:
+    #8b969d;
+
+  font-size:
+    10px;
+
+  line-height:
+    1.5;
+}
+
+.story-stage-progress {
+  width:
+    100%;
+
+  height:
+    3px;
+
+  margin-top:
+    13px;
+
+  overflow:
+    hidden;
+
+  border-radius:
+    99px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+}
+
+.story-stage-progress-fill {
+  width:
+    0%;
+
+  height:
+    100%;
+
+  border-radius:
+    inherit;
+
+  background:
+    #d6e1e6;
+
+  transition:
+    width 500ms ease;
+}
+
+
+/*temporal*/
+
+#game-ui[data-era="modern"]
+  #story-stage-overlay {
+  border-color:
+    rgba(
+      190,
+      210,
+      220,
+      0.18
+    );
+}
+
+#game-ui[data-era="prehistoric"]
+  #story-stage-overlay {
+  border-color:
+    rgba(
+      205,
+      180,
+      145,
+      0.16
+    );
+}
+
+#game-ui[data-era="space"]
+  #story-stage-overlay {
+  border-color:
+    rgba(
+      170,
+      190,
+      255,
+      0.2
+    );
+}
+/*frontend game controller*/
+
+#frontend-status-panel {
+  position: fixed;
+
+  right: 20px;
+  top: 200px;
+
+  z-index: 140;
+
+  width: 230px;
+
+  padding: 13px 14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.12);
+
+  border-radius: 10px;
+
+  background:
+    rgba(7,9,11,0.86);
+
+  backdrop-filter:
+    blur(10px);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0,0,0,0.20);
+
+  pointer-events: none;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+.frontend-status-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 11px;
+
+  color: #6e7981;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+}
+
+.frontend-status-live {
+  color: #75d69b;
+}
+
+.frontend-status-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 6px 0;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,0.045);
+
+  color: #68747c;
+
+  font-size: 9px;
+
+  letter-spacing: 0.08em;
+}
+
+.frontend-status-row strong {
+  overflow: hidden;
+
+  max-width: 125px;
+
+  color: #d9e1e5;
+
+  font-size: 9px;
+
+  text-align: right;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.frontend-status-footer {
+  margin-top: 11px;
+
+  color: #58636a;
+
+  font-size: 8px;
+
+  letter-spacing: 0.08em;
+
+  text-align: center;
+}
+
+.frontend-status-footer span {
+  margin: 0 5px;
+
+  color: #30383d;
+}
+
+
+/*npc interaction*/
+
+#frontend-npc-prompt {
+  position: fixed;
+
+  left: 50%;
+  bottom: 95px;
+
+  z-index: 500;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 9px 13px;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.16);
+
+  border-radius: 8px;
+
+  background:
+    rgba(7,9,11,0.88);
+
+  color: #dbe3e7;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+
+  opacity: 0;
+
+  transform:
+    translate(-50%, 10px);
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+
+  pointer-events: none;
+}
+
+#frontend-npc-prompt.visible {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+.frontend-npc-key {
+  width: 24px;
+  height: 24px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.22);
+
+  border-radius: 5px;
+
+  background:
+    rgba(255,255,255,0.06);
+
+  color: white;
+
+  font-size: 10px;
+}
+
+
+/*backend dialogue*/
+
+#frontend-dialogue-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1800;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: center;
+
+  padding: 25px;
+
+  background:
+    rgba(0,0,0,0.22);
+
+  backdrop-filter:
+    blur(2px);
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  transition:
+    opacity 180ms ease,
+    visibility 180ms ease;
+
+  pointer-events: none;
+}
+
+#frontend-dialogue-overlay.visible {
+  opacity: 1;
+
+  visibility: visible;
+
+  pointer-events: auto;
+}
+
+.frontend-dialogue-card {
+  width:
+    min(
+      850px,
+      100%
+    );
+
+  padding: 20px;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.17);
+
+  border-radius: 13px;
+
+  background:
+    rgba(6,8,10,0.96);
+
+  box-shadow:
+    0 25px 80px
+    rgba(0,0,0,0.45);
+
+  backdrop-filter:
+    blur(12px);
+}
+
+.frontend-dialogue-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  gap: 20px;
+}
+
+.frontend-dialogue-label {
+  color: #6d7880;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.16em;
+}
+
+.frontend-dialogue-speaker {
+  margin-top: 6px;
+
+  color: #e7eef1;
+
+  font-size: 18px;
+
+  font-weight: 800;
+}
+
+.frontend-dialogue-close {
+  color: #5f6a72;
+
+  font-size: 9px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+
+  cursor: pointer;
+}
+
+.frontend-dialogue-close:hover {
+  color: white;
+}
+
+.frontend-dialogue-text {
+  margin-top: 18px;
+
+  color: #e1e7ea;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+}
+
+.frontend-dialogue-choices {
+  display: grid;
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+.frontend-dialogue-choice {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.10);
+
+  border-radius: 8px;
+
+  background:
+    rgba(255,255,255,0.035);
+
+  color: #cfd8dd;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  line-height: 1.45;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
+}
+
+.frontend-dialogue-choice:hover {
+  background:
+    rgba(255,255,255,0.09);
+
+  border-color:
+    rgba(255,255,255,0.28);
+
+  transform:
+    translateX(3px);
+}
+
+
+/*mobile*/
+
+@media (max-width: 700px) {
+
+  #frontend-status-panel {
+    right: 10px;
+    top: auto;
+    bottom: 150px;
+
+    width:
+      calc(100% - 20px);
+
+    max-width: 300px;
+  }
+
+  .frontend-dialogue-card {
+    width:
+      calc(100% - 20px);
+
+    padding: 15px;
+  }
+
+  #frontend-npc-prompt {
+    bottom: 90px;
   }
 }
